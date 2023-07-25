@@ -13,7 +13,11 @@
       },
       "excludedFiles": [
         "jest.config.js"
-      ]
+      ],
+      "rules": {
+        "@typescript-eslint/consistent-type-definitions": "off",
+        "@typescript-eslint/no-namespace": "off"
+      }
     }
   ]
 }
