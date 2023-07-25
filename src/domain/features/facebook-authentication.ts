@@ -5,7 +5,7 @@ export interface FacebookAuthentication {
   perform: (param: FacebookAuthentication.Params) => Promise<FacebookAuthentication.Result>
 }
 
-namespace FacebookAuthentication {
+export namespace FacebookAuthentication {
   export type Params = {
     token: string
   }
