@@ -2,7 +2,7 @@ import { type FacebookAuthentication } from '@/domain/features'
 import { type LoadFacebookUserApi } from '../apis/facebook'
 import { AuthenticationError } from '@/domain/errors'
 
-export class FacebookAuthenticationService {
+export class FacebookAuthenticationService implements FacebookAuthentication {
   constructor(private readonly loadFacebookUserApi: LoadFacebookUserApi) { }
 
   async perform(
