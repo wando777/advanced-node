@@ -1,5 +1,5 @@
 import { type LoadFacebookUserApi } from '@/data/contracts/apis'
-import { type LoadUserAccountRepository } from '@/data/contracts/repositories'
+import { type CreateUserAccountFromFacebookRepository, type LoadUserAccountRepository } from '@/data/contracts/repositories'
 import { FacebookAuthenticationService } from '@/data/contracts/services'
 import { AuthenticationError } from '@/domain/errors'
 import { mock, type MockProxy } from 'jest-mock-extended'
@@ -20,6 +20,7 @@ import { mock, type MockProxy } from 'jest-mock-extended'
 describe('FacebookAuthenticationService', () => {
   let loadFacebookUserApi: MockProxy<LoadFacebookUserApi>
   let loadUserAccountRepository: MockProxy<LoadUserAccountRepository>
+  let createUserAccountFromFacebookRepository: MockProxy<CreateUserAccountFromFacebookRepository>
   let sut: FacebookAuthenticationService
   const token = 'any_token'
   const facebookUserMock: LoadFacebookUserApi.FacebookUserData = {
@@ -31,8 +32,9 @@ describe('FacebookAuthenticationService', () => {
   beforeEach(() => {
     loadFacebookUserApi = mock()
     loadUserAccountRepository = mock()
+    createUserAccountFromFacebookRepository = mock()
     loadFacebookUserApi.loadUser.mockResolvedValue(facebookUserMock)
-    sut = new FacebookAuthenticationService(loadFacebookUserApi, loadUserAccountRepository)
+    sut = new FacebookAuthenticationService(loadFacebookUserApi, loadUserAccountRepository, createUserAccountFromFacebookRepository)
   })
 
   it('Should call LoadFacebookUserApi with correct parameter', async () => {
@@ -49,5 +51,11 @@ describe('FacebookAuthenticationService', () => {
     await sut.perform({ token })
     expect(loadUserAccountRepository.load).toHaveBeenCalledWith(facebookUserMock)
     expect(loadUserAccountRepository.load).toHaveBeenCalledTimes(1)
+  })
+  it('Should call CreateUserAccountRepository when LoadFacebookUserApi returns undefined', async () => {
+    loadUserAccountRepository.load.mockResolvedValue(undefined)
+    await sut.perform({ token })
+    expect(createUserAccountFromFacebookRepository.createFromFacebook).toHaveBeenCalledWith(facebookUserMock)
+    expect(createUserAccountFromFacebookRepository.createFromFacebook).toHaveBeenCalledTimes(1)
   })
 })
