@@ -12,7 +12,10 @@
     "test:watch": "npm test -- --watch",
     "test:staged": "npm test -- --findRelatedTests",
     "test:coverage": "npm test -- --coverage",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "style:check": "prettier --check src/**/*.ts",
+    "style:stable": "prettier --write src/**/*.ts",
+    "style:tests": "prettier --write tests/**/*.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +27,7 @@
     "husky": "^8.0.3",
     "jest": "^29.6.1",
     "lint-staged": "^13.2.3",
+    "prettier": "^3.0.0",
     "ts-jest": "^29.1.1",
     "typescript": "^5.1.6"
   },
