@@ -5,13 +5,14 @@ import {
 } from '../repositories'
 import { type FacebookAuthentication } from '@/domain/features'
 import { AuthenticationError } from '@/domain/errors'
+import { FacebookAccount } from '@/domain/models'
 
 export class FacebookAuthenticationService implements FacebookAuthentication {
   constructor(
     private readonly loadFacebookUserApi: LoadFacebookUserApi,
     private readonly loadUserAccountRepository: LoadUserAccountRepository,
     private readonly saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository
-  ) { }
+  ) {}
 
   async perform(
     param: FacebookAuthentication.Params
@@ -21,12 +22,8 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
       const userData = await this.loadUserAccountRepository.load(
         facebookUserData
       )
-      await this.saveAccountFromFacebookRepository.saveWithFacebook({
-        userId: userData?.userId,
-        name: userData?.name ?? facebookUserData.name,
-        email: facebookUserData.email,
-        facebookId: facebookUserData.facebookId
-      })
+      const fbAccount = new FacebookAccount(facebookUserData, userData)
+      await this.saveAccountFromFacebookRepository.saveWithFacebook(fbAccount)
     }
     return new AuthenticationError()
   }
