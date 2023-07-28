@@ -16,29 +16,16 @@ export namespace LoadUserAccountRepository {
   export type Result = undefined | userData
 }
 
-export interface CreateUserAccountFromFacebookRepository {
-  createFromFacebook: (
-    params: CreateUserAccountFromFacebookRepository.Params
+export interface SaveUserAccountFromFacebookRepository {
+  saveWithFacebook: (
+    params: SaveUserAccountFromFacebookRepository.Params
   ) => Promise<void>
 }
 
-export namespace CreateUserAccountFromFacebookRepository {
+export namespace SaveUserAccountFromFacebookRepository {
   export type Params = {
+    userId?: string
     email: string
-    name: string
-    facebookId: string
-  }
-}
-
-export interface UpdateUserAccountFromFacebookRepository {
-  updateWithFacebook: (
-    params: UpdateUserAccountFromFacebookRepository.Params
-  ) => Promise<void>
-}
-
-export namespace UpdateUserAccountFromFacebookRepository {
-  export type Params = {
-    userId: string
     name: string
     facebookId: string
   }

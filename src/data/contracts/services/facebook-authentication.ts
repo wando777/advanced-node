@@ -1,8 +1,7 @@
 import { type LoadFacebookUserApi } from '../apis/facebook'
 import {
-  type UpdateUserAccountFromFacebookRepository,
-  type CreateUserAccountFromFacebookRepository,
-  type LoadUserAccountRepository
+  type LoadUserAccountRepository,
+  type SaveUserAccountFromFacebookRepository
 } from '../repositories'
 import { type FacebookAuthentication } from '@/domain/features'
 import { AuthenticationError } from '@/domain/errors'
@@ -11,8 +10,7 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
   constructor(
     private readonly loadFacebookUserApi: LoadFacebookUserApi,
     private readonly loadUserAccountRepository: LoadUserAccountRepository,
-    private readonly createUserAccountFromFacebookRepository: CreateUserAccountFromFacebookRepository,
-    private readonly updateUserAccountFromFacebookRepository: UpdateUserAccountFromFacebookRepository
+    private readonly saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository
   ) { }
 
   async perform(
@@ -23,17 +21,12 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
       const userData = await this.loadUserAccountRepository.load(
         facebookUserData
       )
-      if (userData !== undefined) {
-        await this.updateUserAccountFromFacebookRepository.updateWithFacebook({
-          userId: userData.userId,
-          name: userData.name ?? facebookUserData.name,
-          facebookId: facebookUserData.facebookId
-        })
-      } else {
-        await this.createUserAccountFromFacebookRepository.createFromFacebook(
-          facebookUserData
-        )
-      }
+      await this.saveAccountFromFacebookRepository.saveWithFacebook({
+        userId: userData?.userId,
+        name: userData?.name ?? facebookUserData.name,
+        email: facebookUserData.email,
+        facebookId: facebookUserData.facebookId
+      })
     }
     return new AuthenticationError()
   }
