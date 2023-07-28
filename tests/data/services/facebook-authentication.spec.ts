@@ -5,20 +5,12 @@ import {
 } from '@/data/contracts/repositories'
 import { FacebookAuthenticationService } from '@/data/contracts/services'
 import { AuthenticationError } from '@/domain/errors'
+import { FacebookAccount } from '@/domain/models'
+
+import { mocked } from 'jest-mock'
 import { mock, type MockProxy } from 'jest-mock-extended'
 
-// class LoadFacebookUserApiSpy implements LoadFacebookUserApi {
-//   token?: string
-//   result: undefined
-//   callsCount: number = 0
-//   async loadUser(
-//     params: LoadFacebookUserApi.Params
-//   ): Promise<LoadFacebookUserApi.Result> {
-//     this.token = params.token
-//     this.callsCount++
-//     return this.result
-//   }
-// }
+jest.mock('@/domain/models/facebook-account-model')
 
 describe('FacebookAuthenticationService', () => {
   let loadFacebookUserApi: MockProxy<LoadFacebookUserApi>
@@ -30,11 +22,6 @@ describe('FacebookAuthenticationService', () => {
     facebookId: 'any_fb_id',
     name: 'any_fb_name',
     email: 'any_fb_email'
-  }
-  const userDataMock: LoadUserAccountRepository.userData = {
-    userId: 'any_id',
-    name: 'any_name',
-    email: 'any_email'
   }
 
   beforeEach(() => {
@@ -60,49 +47,22 @@ describe('FacebookAuthenticationService', () => {
     const authResult = await sut.perform({ token })
     expect(authResult).toEqual(new AuthenticationError())
   })
-  it('Should call LoadUserAccountRepository when LoadFacebookUserApi returns', async () => {
+  it('Should call LoadUserAccountRepository when LoadFacebookUserApi returns data', async () => {
     await sut.perform({ token })
     expect(loadUserAccountRepository.load).toHaveBeenCalledWith(
       facebookUserMock
     )
     expect(loadUserAccountRepository.load).toHaveBeenCalledTimes(1)
   })
-  it('Should call SaveUserAccountFromFacebookRepository when LoadFacebookUserApi returns undefined', async () => {
+  it('Should call SaveUserAccountFromFacebookRepository with FacebookAccount', async () => {
+    const FacebookAccountStub = jest
+      .fn()
+      .mockImplementation(() => ({ any: 'any' }))
+    mocked(FacebookAccount).mockImplementation(FacebookAccountStub)
     await sut.perform({ token })
     expect(
       saveUserAccountFromFacebookRepository.saveWithFacebook
-    ).toHaveBeenCalledWith(facebookUserMock)
-    expect(
-      saveUserAccountFromFacebookRepository.saveWithFacebook
-    ).toHaveBeenCalledTimes(1)
-  })
-  it('Should call SaveUserAccountFromFacebookRepository when LoadFacebookUserApi returns data', async () => {
-    loadUserAccountRepository.load.mockResolvedValue(userDataMock)
-    await sut.perform({ token })
-    expect(
-      saveUserAccountFromFacebookRepository.saveWithFacebook
-    ).toHaveBeenCalledWith({
-      userId: userDataMock.userId,
-      name: userDataMock.name,
-      email: facebookUserMock.email,
-      facebookId: facebookUserMock.facebookId
-    })
-    expect(
-      saveUserAccountFromFacebookRepository.saveWithFacebook
-    ).toHaveBeenCalledTimes(1)
-  })
-  it('Should call SaveUserAccountFromFacebookRepository when LoadFacebookUserApi returns data without name', async () => {
-    const { name, ...mockWithNoName } = userDataMock
-    loadUserAccountRepository.load.mockResolvedValue(mockWithNoName)
-    await sut.perform({ token })
-    expect(
-      saveUserAccountFromFacebookRepository.saveWithFacebook
-    ).toHaveBeenCalledWith({
-      userId: userDataMock.userId,
-      name: facebookUserMock.name,
-      email: facebookUserMock.email,
-      facebookId: facebookUserMock.facebookId
-    })
+    ).toHaveBeenCalledWith({ any: 'any' })
     expect(
       saveUserAccountFromFacebookRepository.saveWithFacebook
     ).toHaveBeenCalledTimes(1)
