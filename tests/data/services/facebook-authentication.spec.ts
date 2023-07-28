@@ -45,6 +45,7 @@ describe('FacebookAuthenticationService', () => {
     createUserAccountFromFacebookRepository = mock()
     updateUserAccountFromFacebookRepository = mock()
     loadFacebookUserApi.loadUser.mockResolvedValue(facebookUserMock)
+    loadUserAccountRepository.load.mockResolvedValue(undefined)
     sut = new FacebookAuthenticationService(
       loadFacebookUserApi,
       loadUserAccountRepository,
@@ -71,7 +72,6 @@ describe('FacebookAuthenticationService', () => {
     expect(loadUserAccountRepository.load).toHaveBeenCalledTimes(1)
   })
   it('Should call CreateUserAccountFromFacebookRepository when LoadFacebookUserApi returns undefined', async () => {
-    loadUserAccountRepository.load.mockResolvedValue(undefined)
     await sut.perform({ token })
     expect(
       createUserAccountFromFacebookRepository.createFromFacebook
@@ -88,6 +88,21 @@ describe('FacebookAuthenticationService', () => {
     ).toHaveBeenCalledWith({
       userId: userDataMock.userId,
       name: userDataMock.name,
+      facebookId: facebookUserMock.facebookId
+    })
+    expect(
+      updateUserAccountFromFacebookRepository.updateWithFacebook
+    ).toHaveBeenCalledTimes(1)
+  })
+  it('Should call UpdateUserAccountFromFacebookRepository when LoadFacebookUserApi returns data without name', async () => {
+    const { name, ...mockWithNoName } = userDataMock
+    loadUserAccountRepository.load.mockResolvedValue(mockWithNoName)
+    await sut.perform({ token })
+    expect(
+      updateUserAccountFromFacebookRepository.updateWithFacebook
+    ).toHaveBeenCalledWith({
+      userId: userDataMock.userId,
+      name: facebookUserMock.name,
       facebookId: facebookUserMock.facebookId
     })
     expect(

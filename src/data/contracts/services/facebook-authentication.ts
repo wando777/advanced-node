@@ -23,10 +23,10 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
       const userData = await this.loadUserAccountRepository.load(
         facebookUserData
       )
-      if (userData?.name !== undefined) {
+      if (userData !== undefined) {
         await this.updateUserAccountFromFacebookRepository.updateWithFacebook({
           userId: userData.userId,
-          name: userData.name,
+          name: userData.name ?? facebookUserData.name,
           facebookId: facebookUserData.facebookId
         })
       } else {
