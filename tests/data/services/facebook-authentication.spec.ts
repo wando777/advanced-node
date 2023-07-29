@@ -37,7 +37,9 @@ describe('FacebookAuthenticationService', () => {
 
     loadFacebookUserApi.loadUser.mockResolvedValue(facebookUserMock)
     loadUserAccountRepository.load.mockResolvedValue(undefined)
-    saveUserAccountFromFacebookRepository.saveWithFacebook.mockResolvedValueOnce(newUserIdMock)
+    saveUserAccountFromFacebookRepository.saveWithFacebook.mockResolvedValueOnce(
+      newUserIdMock
+    )
 
     sut = new FacebookAuthenticationService(
       loadFacebookUserApi,
@@ -79,11 +81,9 @@ describe('FacebookAuthenticationService', () => {
   })
   it('Should call TokenGenerator with correct params', async () => {
     await sut.perform({ token })
-    expect(
-      crypto.generateToken
-    ).toHaveBeenCalledWith({ key: newUserIdMock.userId })
-    expect(
-      crypto.generateToken
-    ).toHaveBeenCalledTimes(1)
+    expect(crypto.generateToken).toHaveBeenCalledWith({
+      key: newUserIdMock.userId
+    })
+    expect(crypto.generateToken).toHaveBeenCalledTimes(1)
   })
 })

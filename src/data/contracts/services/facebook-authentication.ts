@@ -14,7 +14,7 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
     private readonly loadUserAccountRepository: LoadUserAccountRepository,
     private readonly saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository,
     private readonly cryptyo: TokenGenerator
-  ) { }
+  ) {}
 
   async perform(
     param: FacebookAuthentication.Params
@@ -25,7 +25,8 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
         facebookUserData
       )
       const fbAccount = new FacebookAccount(facebookUserData, userData)
-      const newAccount = await this.saveAccountFromFacebookRepository.saveWithFacebook(fbAccount)
+      const newAccount =
+        await this.saveAccountFromFacebookRepository.saveWithFacebook(fbAccount)
       await this.cryptyo.generateToken({ key: newAccount.userId })
     }
     return new AuthenticationError()
