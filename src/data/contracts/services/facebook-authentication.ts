@@ -6,13 +6,15 @@ import {
 import { type FacebookAuthentication } from '@/domain/features'
 import { AuthenticationError } from '@/domain/errors'
 import { FacebookAccount } from '@/domain/models'
+import { type TokenGenerator } from '../crypto'
 
 export class FacebookAuthenticationService implements FacebookAuthentication {
   constructor(
     private readonly loadFacebookUserApi: LoadFacebookUserApi,
     private readonly loadUserAccountRepository: LoadUserAccountRepository,
-    private readonly saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository
-  ) {}
+    private readonly saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository,
+    private readonly cryptyo: TokenGenerator
+  ) { }
 
   async perform(
     param: FacebookAuthentication.Params
@@ -23,7 +25,8 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
         facebookUserData
       )
       const fbAccount = new FacebookAccount(facebookUserData, userData)
-      await this.saveAccountFromFacebookRepository.saveWithFacebook(fbAccount)
+      const newAccount = await this.saveAccountFromFacebookRepository.saveWithFacebook(fbAccount)
+      await this.cryptyo.generateToken({ key: newAccount.userId })
     }
     return new AuthenticationError()
   }

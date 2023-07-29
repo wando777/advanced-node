@@ -1,4 +1,5 @@
 import { type LoadFacebookUserApi } from '@/data/contracts/apis'
+import { type TokenGenerator } from '@/data/contracts/crypto'
 import {
   type LoadUserAccountRepository,
   type SaveUserAccountFromFacebookRepository
@@ -16,6 +17,7 @@ describe('FacebookAuthenticationService', () => {
   let loadFacebookUserApi: MockProxy<LoadFacebookUserApi>
   let loadUserAccountRepository: MockProxy<LoadUserAccountRepository>
   let saveUserAccountFromFacebookRepository: MockProxy<SaveUserAccountFromFacebookRepository>
+  let crypto: MockProxy<TokenGenerator>
   let sut: FacebookAuthenticationService
   const token = 'any_token'
   const facebookUserMock: LoadFacebookUserApi.FacebookUserData = {
@@ -23,17 +25,25 @@ describe('FacebookAuthenticationService', () => {
     name: 'any_fb_name',
     email: 'any_fb_email'
   }
+  const newUserIdMock: SaveUserAccountFromFacebookRepository.NewUserId = {
+    userId: 'any_userId'
+  }
 
   beforeEach(() => {
     loadFacebookUserApi = mock()
     loadUserAccountRepository = mock()
     saveUserAccountFromFacebookRepository = mock()
+    crypto = mock()
+
     loadFacebookUserApi.loadUser.mockResolvedValue(facebookUserMock)
     loadUserAccountRepository.load.mockResolvedValue(undefined)
+    saveUserAccountFromFacebookRepository.saveWithFacebook.mockResolvedValueOnce(newUserIdMock)
+
     sut = new FacebookAuthenticationService(
       loadFacebookUserApi,
       loadUserAccountRepository,
-      saveUserAccountFromFacebookRepository
+      saveUserAccountFromFacebookRepository,
+      crypto
     )
   })
 
@@ -65,6 +75,15 @@ describe('FacebookAuthenticationService', () => {
     ).toHaveBeenCalledWith({ any: 'any' })
     expect(
       saveUserAccountFromFacebookRepository.saveWithFacebook
+    ).toHaveBeenCalledTimes(1)
+  })
+  it('Should call TokenGenerator with correct params', async () => {
+    await sut.perform({ token })
+    expect(
+      crypto.generateToken
+    ).toHaveBeenCalledWith({ key: newUserIdMock.userId })
+    expect(
+      crypto.generateToken
     ).toHaveBeenCalledTimes(1)
   })
 })
