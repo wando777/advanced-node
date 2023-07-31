@@ -1,12 +1,9 @@
-import { type LoadFacebookUserApi } from '../apis/facebook'
-import {
-  type LoadUserAccountRepository,
-  type SaveUserAccountFromFacebookRepository
-} from '../repositories'
 import { type FacebookAuthentication } from '@/domain/features'
 import { AuthenticationError } from '@/domain/errors'
-import { FacebookAccount } from '@/domain/models'
-import { type TokenGenerator } from '../crypto'
+import { AccessToken, FacebookAccount } from '@/domain/models'
+import { type TokenGenerator } from '../contracts/crypto'
+import { type LoadUserAccountRepository, type SaveUserAccountFromFacebookRepository } from '../contracts/repositories'
+import { type LoadFacebookUserApi } from '../contracts/apis'
 
 export class FacebookAuthenticationService implements FacebookAuthentication {
   constructor(
@@ -14,7 +11,7 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
     private readonly loadUserAccountRepository: LoadUserAccountRepository,
     private readonly saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository,
     private readonly cryptyo: TokenGenerator
-  ) {}
+  ) { }
 
   async perform(
     param: FacebookAuthentication.Params
@@ -27,7 +24,7 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
       const fbAccount = new FacebookAccount(facebookUserData, userData)
       const newAccount =
         await this.saveAccountFromFacebookRepository.saveWithFacebook(fbAccount)
-      await this.cryptyo.generateToken({ key: newAccount.userId })
+      await this.cryptyo.generateToken({ key: newAccount.userId, expirationInMs: AccessToken.expirationInMs })
     }
     return new AuthenticationError()
   }
