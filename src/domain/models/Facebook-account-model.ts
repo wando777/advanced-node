@@ -1,6 +1,6 @@
 import { type AccountModel } from './account-model'
 
-type FacebookAccountModel = {
+export type FacebookAccountModel = {
   facebookId: string
   name: string
   email: string

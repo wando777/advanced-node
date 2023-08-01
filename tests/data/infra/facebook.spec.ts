@@ -1,5 +1,6 @@
 import { FacebookApi, type ClientCredentials, type DebugCredentials } from '@/data/infra/apis'
 import { type HttpGetClient } from '@/data/infra/gateways'
+import { type FacebookAccountModel } from '@/domain/models'
 import { type MockProxy, mock } from 'jest-mock-extended'
 
 describe('FacebookApi', () => {
@@ -11,6 +12,7 @@ describe('FacebookApi', () => {
   let debugCredentials: DebugCredentials
   let userId: string
   let facebookUserInfo: object
+  let facebookUserMock: FacebookAccountModel
   beforeAll(() => {
     httpGetClient = mock()
     clientToken = 'any_client_token'
@@ -29,12 +31,18 @@ describe('FacebookApi', () => {
       access_token: debugCredentials.input_token
     }
     userId = 'any_user_id'
+    facebookUserMock = {
+      facebookId: 'any_fb_id',
+      name: 'any_fb_name',
+      email: 'any_fb_email'
+    }
   })
   beforeEach(() => {
     jest.clearAllMocks()
     httpGetClient.get
       .mockResolvedValueOnce({ access_token: debugCredentials.access_token })
       .mockResolvedValueOnce({ data: { user_id: userId } })
+      .mockResolvedValueOnce(facebookUserMock)
     sut = new FacebookApi(httpGetClient, clientCredentials as ClientCredentials)
   })
   it('should get app token', async () => {
@@ -57,5 +65,9 @@ describe('FacebookApi', () => {
       url: `${baseUrl}/${userId}`,
       params: facebookUserInfo
     })
+  })
+  it('should returns facebook user info', async () => {
+    const facebookUser = await sut.loadUser({ token: clientToken })
+    expect(facebookUser).toEqual(facebookUserMock)
   })
 })

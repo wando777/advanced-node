@@ -28,7 +28,7 @@ export class FacebookApi implements LoadFacebookUserApi {
         input_token: input.token
       }
     })
-    await this.httpGetClient.get({
+    const facebookUser: LoadFacebookUserApi.FacebookUserData = await this.httpGetClient.get({
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       url: `${this.baseUrl}/${debugToken.data.user_id}`,
       params: {
@@ -36,9 +36,7 @@ export class FacebookApi implements LoadFacebookUserApi {
         access_token: input.token
       }
     })
-    return await new Promise((resolve) => {
-      resolve(undefined)
-    })
+    return facebookUser
   }
 }
 
