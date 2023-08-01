@@ -9,6 +9,8 @@ describe('FacebookApi', () => {
   let httpGetClient: MockProxy<HttpGetClient>
   let clientCredentials: object
   let debugCredentials: DebugCredentials
+  let userId: string
+  let facebookUserInfo: object
   beforeAll(() => {
     httpGetClient = mock()
     clientToken = 'any_client_token'
@@ -22,10 +24,17 @@ describe('FacebookApi', () => {
       access_token: 'any_app_token',
       input_token: 'any_client_token'
     }
+    facebookUserInfo = {
+      fields: 'id,name,email',
+      access_token: debugCredentials.input_token
+    }
+    userId = 'any_user_id'
   })
   beforeEach(() => {
     jest.clearAllMocks()
-    httpGetClient.get.mockResolvedValueOnce({ access_token: debugCredentials.access_token })
+    httpGetClient.get
+      .mockResolvedValueOnce({ access_token: debugCredentials.access_token })
+      .mockResolvedValueOnce({ data: { user_id: userId } })
     sut = new FacebookApi(httpGetClient, clientCredentials as ClientCredentials)
   })
   it('should get app token', async () => {
@@ -40,6 +49,13 @@ describe('FacebookApi', () => {
     expect(httpGetClient.get).toHaveBeenCalledWith({
       url: `${baseUrl}/debug_token`,
       params: debugCredentials
+    })
+  })
+  it('should get user info', async () => {
+    await sut.loadUser({ token: clientToken })
+    expect(httpGetClient.get).toHaveBeenCalledWith({
+      url: `${baseUrl}/${userId}`,
+      params: facebookUserInfo
     })
   })
 })
