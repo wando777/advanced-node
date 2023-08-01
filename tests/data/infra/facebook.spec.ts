@@ -1,9 +1,6 @@
-import {
-  type ClientCredentials,
-  FacebookApi
-} from '@/data/infra/apis/facebook-api'
-import { type HttpGetClient } from '@/data/infra/gateways/client'
-import { mock, type MockProxy } from 'jest-mock-extended'
+import { FacebookApi, type ClientCredentials } from '@/data/infra/apis'
+import { type HttpGetClient } from '@/data/infra/gateways'
+import { type MockProxy, mock } from 'jest-mock-extended'
 
 describe('FacebookApi', () => {
   let sut: FacebookApi

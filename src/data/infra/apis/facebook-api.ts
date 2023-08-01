@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { type LoadFacebookUserApi } from '@/data/contracts/apis'
-import { type HttpGetClient } from '../gateways/client'
+import { type HttpGetClient } from '../gateways'
 
 export class FacebookApi implements LoadFacebookUserApi {
   private readonly baseUrl = 'https://graph.facebook.com'
   constructor(
     private readonly httpGetClient: HttpGetClient,
     private readonly clientCredentials: ClientCredentials
-  ) {}
+  ) { }
 
   async loadUser(
     input: LoadFacebookUserApi.Input
