@@ -32,6 +32,11 @@ describe('AxiosttpClient', () => {
       const res = await sut.get(anyInput)
       expect(res).toEqual(returnGetMock.data)
     })
+    it('Should rethrown if get throws', async () => {
+      fakeAxios.get.mockRejectedValueOnce(new Error('http_error'))
+      const promise = sut.get(anyInput)
+      await expect(promise).rejects.toThrow(new Error('http_error'))
+    })
   })
 })
 
@@ -39,6 +44,5 @@ class AxiosHttpClient implements HttpGetClient {
   async get<T = any>(input: HttpGetClient.Input): Promise<T> {
     const response = await axios.get(input.url, { params: input.params })
     return response.data
-    // return await new Promise(resolve => { resolve(response.data) })
   }
 }
