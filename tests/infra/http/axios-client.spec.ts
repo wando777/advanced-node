@@ -7,7 +7,12 @@ describe('AxiosttpClient', () => {
   describe('GET', () => {
     let sut: AxiosHttpClient
     let anyInput: HttpGetClient.Input
+    let fakeAxios: jest.Mocked<typeof axios>
+    let returnGetMock: any
     beforeAll(() => {
+      returnGetMock = { status: 200, data: 'any_data' }
+      fakeAxios = axios as jest.Mocked<typeof axios>
+      fakeAxios.get.mockResolvedValue(returnGetMock)
       anyInput = {
         url: 'any',
         params: {
@@ -19,20 +24,21 @@ describe('AxiosttpClient', () => {
       sut = new AxiosHttpClient()
     })
     it('Should call get with correct params', async () => {
-      const fakeAxios = axios as jest.Mocked<typeof axios>
-
       await sut.get(anyInput)
-
       expect(fakeAxios.get).toHaveBeenCalledWith(anyInput.url, { params: anyInput.params })
       expect(fakeAxios.get).toHaveBeenCalledTimes(1)
+    })
+    it('Should return data on get success', async () => {
+      const res = await sut.get(anyInput)
+      expect(res).toEqual(returnGetMock.data)
     })
   })
 })
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
-class AxiosHttpClient {
-  async get(input: HttpGetClient.Input): Promise<void> {
-    await axios.get(input.url, { params: input.params })
+class AxiosHttpClient implements HttpGetClient {
+  async get<T = any>(input: HttpGetClient.Input): Promise<T> {
+    const response = await axios.get(input.url, { params: input.params })
+    return response.data
     // return await new Promise(resolve => { resolve(response.data) })
   }
 }
