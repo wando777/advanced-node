@@ -1,4 +1,8 @@
-import { FacebookApi, type ClientCredentials, type DebugCredentials } from '@/data/infra/apis'
+import {
+  FacebookApi,
+  type ClientCredentials,
+  type DebugCredentials
+} from '@/data/infra/apis'
 import { type HttpGetClient } from '@/data/infra/gateways'
 import { type FacebookAccountModel } from '@/domain/models'
 import { type MockProxy, mock } from 'jest-mock-extended'

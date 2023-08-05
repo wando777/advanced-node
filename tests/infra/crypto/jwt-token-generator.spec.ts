@@ -23,16 +23,28 @@ describe('JwtTokenGenerator', () => {
   it('Should call sign with correct params', async () => {
     await sut.generateToken({ key: jwtParams.key, expirationInMs: 3000 })
 
-    expect(fakeJwt.sign).toHaveBeenCalledWith({ key: jwtParams.key }, 'any_secret', { expiresIn: 3 })
+    expect(fakeJwt.sign).toHaveBeenCalledWith(
+      { key: jwtParams.key },
+      'any_secret',
+      { expiresIn: 3 }
+    )
   })
   it('Should return a valid token on success', async () => {
-    const token = await sut.generateToken({ key: jwtParams.key, expirationInMs: 3000 })
+    const token = await sut.generateToken({
+      key: jwtParams.key,
+      expirationInMs: 3000
+    })
 
     expect(token).toEqual({ value: validTokenMock })
   })
   it('Should rethrown if sign throws', async () => {
-    fakeJwt.sign.mockImplementationOnce(() => { throw new Error('token_generator_error') })
-    const promise = sut.generateToken({ key: jwtParams.key, expirationInMs: 3000 })
+    fakeJwt.sign.mockImplementationOnce(() => {
+      throw new Error('token_generator_error')
+    })
+    const promise = sut.generateToken({
+      key: jwtParams.key,
+      expirationInMs: 3000
+    })
     await expect(promise).rejects.toThrow(new Error('token_generator_error'))
   })
 })

@@ -25,7 +25,9 @@ describe('AxiosttpClient', () => {
     })
     it('Should call get with correct params', async () => {
       await sut.get(anyInput)
-      expect(fakeAxios.get).toHaveBeenCalledWith(anyInput.url, { params: anyInput.params })
+      expect(fakeAxios.get).toHaveBeenCalledWith(anyInput.url, {
+        params: anyInput.params
+      })
       expect(fakeAxios.get).toHaveBeenCalledTimes(1)
     })
     it('Should return data on get success', async () => {

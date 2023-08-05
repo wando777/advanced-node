@@ -1,17 +1,17 @@
 export interface LoadUserAccountRepository {
   load: (
-    params: LoadUserAccountRepository.Params
+    params: LoadUserAccountRepository.Input
   ) => Promise<LoadUserAccountRepository.Result>
 }
 
 export namespace LoadUserAccountRepository {
-  export type Params = {
+  export type Input = {
     email: string
   }
   export type UserData = {
     userId: string
     name?: string
-    email: string
+    email?: string
   }
   export type Result = undefined | UserData
 }
