@@ -28,10 +28,23 @@ describe('PgUserAccountRepository', () => {
       await pgUserRepo.save({ email: userDataMock.email })
       const account = await sut.load({ email: userDataMock.email ?? '' })
       expect(account).toEqual({ userId: '1' })
+      await connection.close()
+    })
+    it('should return undefined if email does not exists', async () => {
+      const db = newDb()
+      const connection = await db.adapters.createTypeormConnection({
+        type: 'postgres',
+        entities: [PgUser]
+      })
+      await connection.synchronize()
+
+      const account = await sut.load({ email: userDataMock.email ?? '' })
+
+      expect(account).toEqual(undefined)
     })
   })
   describe('saveWithFacebook', () => {
-    it('should return an account if email exists', () => {})
+    it('', () => {})
   })
 })
 
