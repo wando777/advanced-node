@@ -55,15 +55,29 @@ describe('PgUserAccountRepository', () => {
   describe('saveWithFacebook', () => {
     it('should create an account if userId is undefined', async () => {
       const { userId, ...newUserDataMock } = userDataMock
-      await sut.saveWithFacebook(newUserDataMock)
+      const newUserId = await sut.saveWithFacebook(newUserDataMock)
       const pgUser = await pgUserRepo.findOne({ email: userDataMock.email })
       expect(pgUser?.userId).toBe(1)
+      expect(newUserId).toEqual({ userId: '1' })
     })
-    it('should update an account if userId is undefined', async () => {
+    it('should update an account when userId is given', async () => {
       const { userId, ...newUserDataMock } = userDataMock
-      await sut.saveWithFacebook(newUserDataMock)
+      const newUser = {
+        email: 'any_new_email@email.com',
+        userId: '1',
+        name: 'any_new_name',
+        facebookId: 'any_new_facebookId'
+      }
+      await pgUserRepo.save(newUserDataMock)
+      const account = await sut.saveWithFacebook(newUser)
       const pgUser = await pgUserRepo.findOne({ email: userDataMock.email })
-      expect(pgUser?.userId).toBe(1)
+      expect(pgUser).toEqual({
+        email: 'any_email@email.com',
+        userId: 1,
+        name: 'any_new_name',
+        facebookId: 'any_new_facebookId'
+      })
+      expect(account).toEqual({ userId: newUser.userId })
     })
   })
 })

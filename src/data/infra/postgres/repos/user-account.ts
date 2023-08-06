@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 import {
   type SaveUserAccountFromFacebookRepository,
   type LoadUserAccountRepository
@@ -5,23 +6,39 @@ import {
 import { getRepository } from 'typeorm'
 import { PgUser } from '../entities'
 
+type SaveParams = SaveUserAccountFromFacebookRepository.Input
+type SaveResult = SaveUserAccountFromFacebookRepository.NewUserId
+
 export class PgUserAccountRepository
-implements LoadUserAccountRepository, SaveUserAccountFromFacebookRepository {
+  implements LoadUserAccountRepository, SaveUserAccountFromFacebookRepository {
+  private readonly pgUserRepo = getRepository(PgUser)
   async saveWithFacebook(
-    input: SaveUserAccountFromFacebookRepository.Input
-  ): Promise<SaveUserAccountFromFacebookRepository.NewUserId> {
-    const pgUserRepo = getRepository(PgUser)
-    await pgUserRepo.save({ email: input.email, name: input.name, facebookId: input.facebookId })
-    return await new Promise((resolve, reject) => {
-      resolve({ userId: '123' })
-    })
+    input: SaveParams
+  ): Promise<SaveResult> {
+    let userId: string
+    if (input.userId === undefined) {
+      const pgUser = await this.pgUserRepo.save({
+        email: input.email,
+        name: input.name,
+        facebookId: input.facebookId
+      })
+      userId = pgUser.userId.toString()
+    } else {
+      await this.pgUserRepo.update(
+        parseInt(input.userId),
+        {
+          name: input.name,
+          facebookId: input.facebookId
+        })
+      userId = input.userId
+    }
+    return { userId }
   }
 
   async load(
     input: LoadUserAccountRepository.Input
   ): Promise<LoadUserAccountRepository.Result> {
-    const pgUserRepo = getRepository(PgUser)
-    const pgUser = await pgUserRepo.findOne({ email: input.email })
+    const pgUser = await this.pgUserRepo.findOne({ email: input.email })
 
     if (pgUser !== undefined && pgUser !== null) {
       return {
