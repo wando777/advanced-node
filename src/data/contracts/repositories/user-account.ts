@@ -18,12 +18,12 @@ export namespace LoadUserAccountRepository {
 
 export interface SaveUserAccountFromFacebookRepository {
   saveWithFacebook: (
-    params: SaveUserAccountFromFacebookRepository.Params
+    params: SaveUserAccountFromFacebookRepository.Input
   ) => Promise<SaveUserAccountFromFacebookRepository.Result>
 }
 
 export namespace SaveUserAccountFromFacebookRepository {
-  export type Params = {
+  export type Input = {
     userId?: string
     email: string
     name: string
