@@ -1,8 +1,8 @@
 import { AuthenticationError } from '@/domain/errors'
 import { type FacebookAuthentication } from '@/domain/features'
 import { badRequest, unauthorized, type HttpResponse, serverError, ok, type HttpRequest } from '../helpers'
-import { RequiredFieldError } from '../errors'
 import { type AccessToken } from '@/domain/models'
+import { Required } from '../validation'
 
 export class FacebookLoginController implements Controller {
   constructor(private readonly facebookAuth: FacebookAuthentication) { }
@@ -23,10 +23,8 @@ export class FacebookLoginController implements Controller {
   }
 
   private validate(httpRequest: HttpRequest): Error | undefined {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!httpRequest?.token || Object.keys(httpRequest.token).length === 0) {
-      return new RequiredFieldError('token')
-    }
+    const validation = new Required(httpRequest.token, 'token')
+    return validation.validate()
   }
 }
 
