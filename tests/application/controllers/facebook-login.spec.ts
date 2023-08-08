@@ -43,7 +43,7 @@ describe('FacebookLoginController', () => {
       data: new AuthenticationError()
     })
   })
-  it('should return 200 if Facebook Authentication succeeds', async () => {
+  it('should return 200 if FacebookAuthentication succeeds', async () => {
     const httpResponse = await sut.handle({ token: 'any_token' })
 
     expect(httpResponse).toEqual({
@@ -51,12 +51,15 @@ describe('FacebookLoginController', () => {
       data: new AccessToken('valid_token')
     })
   })
-  it('should return 500 if Facebook Authentication throws', async () => {
+  it('should return 500 if FacebookAuthentication throws', async () => {
+    const genericError = new Error('infra_error')
+    facebookAuth.perform.mockRejectedValueOnce(new ServerError(genericError))
+
     const httpResponse = await sut.handle({ token: 'any_token' })
 
     expect(httpResponse).toEqual({
-      statusCode: 200,
-      data: new AccessToken('valid_token')
+      statusCode: 500,
+      data: new ServerError(genericError)
     })
   })
 })
@@ -71,17 +74,23 @@ class FacebookLoginController implements Controller {
         data: new Error('A valid token must be provided')
       }
     }
-
-    const res = await this.facebookAuth.perform({ token: httpRequest.token })
-    if (res instanceof AuthenticationError) {
+    try {
+      const res = await this.facebookAuth.perform({ token: httpRequest.token })
+      if (res instanceof AuthenticationError) {
+        return {
+          statusCode: 401,
+          data: res
+        }
+      }
       return {
-        statusCode: 401,
+        statusCode: 200,
         data: res
       }
-    }
-    return {
-      statusCode: 200,
-      data: res
+    } catch (error) {
+      return {
+        statusCode: 500,
+        data: error
+      }
     }
   }
 }
@@ -93,4 +102,12 @@ type HttpResponse = {
 
 interface Controller {
   handle: (httpRequest: any) => Promise<HttpResponse>
+}
+
+class ServerError extends Error {
+  constructor(error?: Error) {
+    super('The server has been returned an error')
+    this.name = 'ServerError'
+    this.stack = error?.stack
+  }
 }
