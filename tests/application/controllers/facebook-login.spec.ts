@@ -1,5 +1,5 @@
 import { FacebookLoginController } from '@/application/controllers'
-import { ServerError } from '@/application/errors'
+import { RequiredFieldError, ServerError, UnauthorizedError } from '@/application/errors'
 import { AuthenticationError } from '@/domain/errors'
 import { type FacebookAuthentication } from '@/domain/features'
 import { AccessToken } from '@/domain/models'
@@ -20,14 +20,14 @@ describe('FacebookLoginController', () => {
     const res = await sut.handle({ token: '' })
     expect(res).toEqual({
       statusCode: 400,
-      data: new Error('A valid token must be provided')
+      data: new RequiredFieldError('token')
     })
   })
   it('should return 400 if token is undefined', async () => {
     const res = await sut.handle({ token: undefined })
     expect(res).toEqual({
       statusCode: 400,
-      data: new Error('A valid token must be provided')
+      data: new RequiredFieldError('token')
     })
   })
   it('should call FacebookAuthentication with correct params', async () => {
@@ -42,7 +42,7 @@ describe('FacebookLoginController', () => {
 
     expect(httpResponse).toEqual({
       statusCode: 401,
-      data: new AuthenticationError()
+      data: new UnauthorizedError()
     })
   })
   it('should return 200 if FacebookAuthentication succeeds', async () => {
