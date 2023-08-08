@@ -1,5 +1,6 @@
 import { AuthenticationError } from '@/domain/errors'
 import { type FacebookAuthentication } from '@/domain/features'
+import { AccessToken } from '@/domain/models'
 import { mock, type MockProxy } from 'jest-mock-extended'
 
 describe('FacebookLoginController', () => {
@@ -7,6 +8,7 @@ describe('FacebookLoginController', () => {
   let facebookAuth: MockProxy<FacebookAuthentication>
   beforeAll(() => {
     facebookAuth = mock()
+    facebookAuth.perform.mockResolvedValue(new AccessToken('valid_token'))
   })
   beforeEach(() => {
     jest.clearAllMocks()
@@ -31,7 +33,7 @@ describe('FacebookLoginController', () => {
 
     expect(facebookAuth.perform).toHaveBeenCalledWith({ token: 'any_token' })
   })
-  it('should returns 401 if FacebookAuthentication fails', async () => {
+  it('should return 401 if FacebookAuthentication fails', async () => {
     facebookAuth.perform.mockResolvedValueOnce(new AuthenticationError())
 
     const httpResponse = await sut.handle({ token: 'any_token' })
@@ -39,6 +41,22 @@ describe('FacebookLoginController', () => {
     expect(httpResponse).toEqual({
       statusCode: 401,
       data: new AuthenticationError()
+    })
+  })
+  it('should return 200 if Facebook Authentication succeeds', async () => {
+    const httpResponse = await sut.handle({ token: 'any_token' })
+
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      data: new AccessToken('valid_token')
+    })
+  })
+  it('should return 500 if Facebook Authentication throws', async () => {
+    const httpResponse = await sut.handle({ token: 'any_token' })
+
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      data: new AccessToken('valid_token')
     })
   })
 })
@@ -55,9 +73,14 @@ class FacebookLoginController implements Controller {
     }
 
     const res = await this.facebookAuth.perform({ token: httpRequest.token })
-
+    if (res instanceof AuthenticationError) {
+      return {
+        statusCode: 401,
+        data: res
+      }
+    }
     return {
-      statusCode: 401,
+      statusCode: 200,
       data: res
     }
   }
