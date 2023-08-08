@@ -7,9 +7,9 @@ import { type AccessToken } from '@/domain/models'
 export class FacebookLoginController implements Controller {
   constructor(private readonly facebookAuth: FacebookAuthentication) { }
   async handle(httpRequest: HttpRequest): Promise<HttpResponse<Output>> {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!httpRequest?.token || Object.keys(httpRequest.token).length === 0) {
-      return badRequest(new RequiredFieldError('token'))
+    const validation = this.validate(httpRequest)
+    if (validation !== undefined) {
+      return badRequest(validation)
     }
     try {
       const res = await this.facebookAuth.perform({ token: httpRequest.token })
@@ -19,6 +19,13 @@ export class FacebookLoginController implements Controller {
       return ok(res)
     } catch (error) {
       return serverError(error as Error)
+    }
+  }
+
+  private validate(httpRequest: HttpRequest): Error | undefined {
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (!httpRequest?.token || Object.keys(httpRequest.token).length === 0) {
+      return new RequiredFieldError('token')
     }
   }
 }

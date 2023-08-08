@@ -24,7 +24,7 @@ describe('FacebookLoginController', () => {
     })
   })
   it('should return 400 if token is undefined', async () => {
-    const res = await sut.handle({ token: undefined })
+    const res = await sut.handle({ token: undefined as any })
     expect(res).toEqual({
       statusCode: 400,
       data: new RequiredFieldError('token')

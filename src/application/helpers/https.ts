@@ -6,7 +6,7 @@ export type HttpResponse<T = any> = {
 }
 
 export type HttpRequest = {
-  token: string | undefined | null
+  token: string
 }
 
 export const badRequest = (error: Error): HttpResponse<Error> => ({
