@@ -1,4 +1,4 @@
-import { AxiosHttpClient, type HttpGetClient } from '@/data/infra/gateways'
+import { AxiosHttpClient, type HttpGetClient } from '@/infra/gateways'
 import axios from 'axios'
 
 jest.mock('axios')

@@ -1,5 +1,5 @@
-import { PgUser } from '@/data/infra/postgres/entities'
-import { PgUserAccountRepository } from '@/data/infra/postgres/repos'
+import { PgUser } from '@/infra/postgres/entities'
+import { PgUserAccountRepository } from '@/infra/postgres/repos'
 import { type Repository, getRepository, getConnection } from 'typeorm'
 import { type IMemoryDb, newDb, type IBackup } from 'pg-mem'
 

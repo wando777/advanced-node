@@ -1,3 +1,5 @@
+import { FacebookLoginController } from '@/application/controllers'
+import { ServerError } from '@/application/errors'
 import { AuthenticationError } from '@/domain/errors'
 import { type FacebookAuthentication } from '@/domain/features'
 import { AccessToken } from '@/domain/models'
@@ -63,51 +65,3 @@ describe('FacebookLoginController', () => {
     })
   })
 })
-
-class FacebookLoginController implements Controller {
-  constructor(private readonly facebookAuth: FacebookAuthentication) { }
-  async handle(httpRequest: any): Promise<HttpResponse> {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!httpRequest?.token || Object.keys(httpRequest.token).length === 0) {
-      return {
-        statusCode: 400,
-        data: new Error('A valid token must be provided')
-      }
-    }
-    try {
-      const res = await this.facebookAuth.perform({ token: httpRequest.token })
-      if (res instanceof AuthenticationError) {
-        return {
-          statusCode: 401,
-          data: res
-        }
-      }
-      return {
-        statusCode: 200,
-        data: res
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        data: error
-      }
-    }
-  }
-}
-
-type HttpResponse = {
-  statusCode: number
-  data: any
-}
-
-interface Controller {
-  handle: (httpRequest: any) => Promise<HttpResponse>
-}
-
-class ServerError extends Error {
-  constructor(error?: Error) {
-    super('The server has been returned an error')
-    this.name = 'ServerError'
-    this.stack = error?.stack
-  }
-}
