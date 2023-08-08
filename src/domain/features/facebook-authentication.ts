@@ -3,13 +3,13 @@ import { type AuthenticationError } from '@/domain/errors'
 
 export interface FacebookAuthentication {
   perform: (
-    param: FacebookAuthentication.Params
-  ) => Promise<FacebookAuthentication.Result>
+    input: FacebookAuthentication.Input
+  ) => Promise<FacebookAuthentication.Output>
 }
 
 export namespace FacebookAuthentication {
-  export type Params = {
+  export type Input = {
     token: string
   }
-  export type Result = AccessToken | AuthenticationError
+  export type Output = AccessToken | AuthenticationError
 }

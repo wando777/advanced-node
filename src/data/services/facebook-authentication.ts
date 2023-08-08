@@ -14,12 +14,12 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
     private readonly loadUserAccountRepository: LoadUserAccountRepository,
     private readonly saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository,
     private readonly cryptyo: TokenGenerator
-  ) {}
+  ) { }
 
   async perform(
-    param: FacebookAuthentication.Params
-  ): Promise<FacebookAuthentication.Result> {
-    const facebookUserData = await this.loadFacebookUserApi.loadUser(param)
+    input: FacebookAuthentication.Input
+  ): Promise<FacebookAuthentication.Output> {
+    const facebookUserData = await this.loadFacebookUserApi.loadUser(input)
     if (facebookUserData !== undefined) {
       const userData = await this.loadUserAccountRepository.load(
         facebookUserData
