@@ -2,7 +2,7 @@ import { AuthenticationError } from '@/domain/errors'
 import { type FacebookAuthentication } from '@/domain/features'
 import { badRequest, unauthorized, type HttpResponse, serverError, ok, type HttpRequest } from '../helpers'
 import { type AccessToken } from '@/domain/models'
-import { Required, ValidationComposite } from '../validation'
+import { Required, ValidationBuilder, ValidationComposite } from '../validation'
 
 export class FacebookLoginController implements Controller {
   constructor(private readonly facebookAuth: FacebookAuthentication) { }
@@ -23,9 +23,12 @@ export class FacebookLoginController implements Controller {
   }
 
   private validate(httpRequest: HttpRequest): Error | undefined {
-    return new ValidationComposite([
-      new Required(httpRequest.token, 'token')
-    ]).validate()
+    const validators = ValidationBuilder
+      .of({ value: httpRequest.token, fieldName: 'token' })
+      .required()
+      .build()
+
+    return new ValidationComposite(validators).validate()
   }
 }
 
