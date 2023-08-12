@@ -1,4 +1,4 @@
-import { Required, ValidationBuilder, Validator } from "@/application/validation"
+import { Required, ValidationBuilder } from '@/application/validation'
 
 describe('ValidationBuilder', () => {
   it('should return a Required validator', () => {

@@ -2,7 +2,7 @@ import { AuthenticationError } from '@/domain/errors'
 import { type FacebookAuthentication } from '@/domain/features'
 import { badRequest, unauthorized, type HttpResponse, serverError, ok, type HttpRequest } from '../helpers'
 import { type AccessToken } from '@/domain/models'
-import { Required, ValidationBuilder, ValidationComposite } from '../validation'
+import { ValidationBuilder, ValidationComposite } from '../validation'
 
 export class FacebookLoginController implements Controller {
   constructor(private readonly facebookAuth: FacebookAuthentication) { }
