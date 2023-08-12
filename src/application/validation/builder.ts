@@ -1,5 +1,5 @@
-import { Required } from "./required"
-import { Validator } from "./validation"
+import { Required } from './required'
+import { type Validator } from './validation'
 
 export class ValidationBuilder {
   private constructor(
