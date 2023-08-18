@@ -74,4 +74,11 @@ describe('FacebookApi', () => {
     const facebookUser = await sut.loadUser({ token: clientToken })
     expect(facebookUser).toEqual(facebookUserMock)
   })
+  it('should returns undefined if HttpGetClient throws', async () => {
+    httpGetClient.get.mockReset().mockRejectedValueOnce(new Error('fb_error'))
+
+    const facebookUser = await sut.loadUser({ token: clientToken })
+
+    expect(facebookUser).toBeUndefined()
+  })
 })

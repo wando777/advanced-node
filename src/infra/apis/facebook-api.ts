@@ -10,14 +10,18 @@ export class FacebookApi implements LoadFacebookUserApi {
   constructor(
     private readonly httpGetClient: HttpGetClient,
     private readonly clientCredentials: ClientCredentials
-  ) {}
+  ) { }
 
   async loadUser(
     input: LoadFacebookUserApi.Input
   ): Promise<LoadFacebookUserApi.Result> {
-    const facebookUser: LoadFacebookUserApi.FacebookUserData =
-      await this.getUserInfo(input.token)
-    return facebookUser
+    try {
+      const facebookUser: LoadFacebookUserApi.FacebookUserData =
+        await this.getUserInfo(input.token)
+      return facebookUser
+    } catch {
+      return undefined
+    }
   }
 
   private async getAppToken(): Promise<AppToken> {
