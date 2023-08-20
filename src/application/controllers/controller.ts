@@ -1,15 +1,14 @@
-import { type AccessToken } from '@/domain/models'
 import { type HttpResponse, badRequest, serverError } from '../helpers'
 import { type Validator, ValidationComposite } from '../validation'
 
 export abstract class Controller {
-  abstract perform(httpRequest: any): Promise<HttpResponse<Output>>
+  abstract perform(httpRequest: any): Promise<HttpResponse>
 
   buildValidators(httpRequest: any): Validator[] {
     return []
   }
 
-  async handle(httpRequest: any): Promise<HttpResponse<Output>> {
+  async handle(httpRequest: any): Promise<HttpResponse> {
     const validation = this.validate(httpRequest)
     if (validation !== undefined) {
       return badRequest(validation)
@@ -26,5 +25,3 @@ export abstract class Controller {
     return new ValidationComposite(validators).validate()
   }
 }
-
-type Output = Error | AccessToken
