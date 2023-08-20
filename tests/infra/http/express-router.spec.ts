@@ -2,6 +2,7 @@ import { type Request, type Response } from 'express'
 import { getMockReq, getMockRes } from '@jest-mock/express'
 import { type Controller } from '@/application/controllers'
 import { type MockProxy, mock } from 'jest-mock-extended'
+import { ExpressRouter } from '@/infra/gateways'
 
 describe('ExpressRouter', () => {
   let req: Request
@@ -54,15 +55,3 @@ describe('ExpressRouter', () => {
     expect(res.json).toHaveBeenCalledTimes(1)
   })
 })
-
-class ExpressRouter {
-  constructor(private readonly controller: Controller) { }
-  async adapter(req: Request, res: Response): Promise<void> {
-    const response = await this.controller.handle({ ...req.body })
-    if (response.statusCode === 200) {
-      res.status(200).json(response.data)
-    } else {
-      res.status(response.statusCode).json({ error: response.data.message })
-    }
-  }
-}
