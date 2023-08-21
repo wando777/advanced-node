@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { type Controller } from '@/application/controllers'
 import { type RequestHandler, type Request, type Response } from 'express'
 
