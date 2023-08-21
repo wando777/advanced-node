@@ -13,8 +13,8 @@ export class FacebookApi implements LoadFacebookUserApi {
   ) { }
 
   async loadUser(
-    input: LoadFacebookUserApi.Input
-  ): Promise<LoadFacebookUserApi.Result> {
+    input: Input
+  ): Promise<Result> {
     try {
       const facebookUser: LoadFacebookUserApi.FacebookUserData =
         await this.getUserInfo(input.token)
@@ -77,3 +77,6 @@ type DebugToken = {
     user_id: string
   }
 }
+
+type Result = LoadFacebookUserApi.Result
+type Input = LoadFacebookUserApi.Input
