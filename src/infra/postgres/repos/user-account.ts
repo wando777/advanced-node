@@ -12,18 +12,18 @@ type SaveResult = SaveUserAccountFromFacebookRepository.NewUserId
 export class PgUserAccountRepository
   implements LoadUserAccountRepository, SaveUserAccountFromFacebookRepository
 {
-  private readonly pgUserRepo = getRepository(PgUser)
   async saveWithFacebook(input: SaveParams): Promise<SaveResult> {
+    const pgUserRepo = getRepository(PgUser)
     let userId: string
     if (input.userId === undefined) {
-      const pgUser = await this.pgUserRepo.save({
+      const pgUser = await pgUserRepo.save({
         email: input.email,
         name: input.name,
         facebookId: input.facebookId
       })
       userId = pgUser.userId.toString()
     } else {
-      await this.pgUserRepo.update(parseInt(input.userId), {
+      await pgUserRepo.update(parseInt(input.userId), {
         name: input.name,
         facebookId: input.facebookId
       })
@@ -35,7 +35,8 @@ export class PgUserAccountRepository
   async load(
     input: LoadUserAccountRepository.Input
   ): Promise<LoadUserAccountRepository.Result> {
-    const pgUser = await this.pgUserRepo.findOne({ email: input.email })
+    const pgUserRepo = getRepository(PgUser)
+    const pgUser = await pgUserRepo.findOne({ email: input.email })
 
     if (pgUser !== undefined && pgUser !== null) {
       return {
