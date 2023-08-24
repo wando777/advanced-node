@@ -2,7 +2,7 @@
 import {
   type SaveUserAccountFromFacebookRepository,
   type LoadUserAccountRepository
-} from '@/data/contracts/repositories'
+} from '@/domain/contracts/repositories'
 import { getRepository } from 'typeorm'
 import { PgUser } from '../entities'
 

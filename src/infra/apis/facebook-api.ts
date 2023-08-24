@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { type LoadFacebookUserApi } from '@/data/contracts/apis'
+import { type LoadFacebookUserApi } from '@/domain/contracts/apis'
 import { type HttpGetClient } from '../gateways'
 
 export class FacebookApi implements LoadFacebookUserApi {

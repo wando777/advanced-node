@@ -14,7 +14,7 @@ export class FacebookAuthenticationService implements FacebookAuthentication {
     private readonly loadUserAccountRepository: LoadUserAccountRepository,
     private readonly saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository,
     private readonly cryptyo: TokenGenerator
-  ) {}
+  ) { }
 
   async perform(
     input: FacebookAuthentication.Input

@@ -1,10 +1,10 @@
-import { type LoadFacebookUserApi } from '@/data/contracts/apis'
-import { type TokenGenerator } from '@/data/contracts/crypto'
+import { type LoadFacebookUserApi } from '@/domain/contracts/apis'
+import { type TokenGenerator } from '@/domain/contracts/crypto'
 import {
   type LoadUserAccountRepository,
   type SaveUserAccountFromFacebookRepository
-} from '@/data/contracts/repositories'
-import { FacebookAuthenticationService } from '@/data/services'
+} from '@/domain/contracts/repositories'
+import { FacebookAuthenticationService } from '@/domain/services'
 import { AuthenticationError } from '@/domain/errors'
 import { AccessToken, FacebookAccount } from '@/domain/models'
 
