@@ -1,9 +1,9 @@
 import { FacebookLoginController } from '@/application/controllers'
 import { UnauthorizedError } from '@/application/errors'
 import { Required } from '@/application/validation'
-import { AuthenticationError } from '@/domain/errors'
+import { AuthenticationError } from '@/domain/entities/errors'
 import { type FacebookAuthentication } from '@/domain/features'
-import { AccessToken } from '@/domain/models'
+import { AccessToken } from '@/domain/entities'
 import { mock, type MockProxy } from 'jest-mock-extended'
 
 jest.mock('@/application/validation/composite')

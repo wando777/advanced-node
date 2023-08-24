@@ -4,7 +4,7 @@ import {
   type DebugCredentials
 } from '@/infra/apis'
 import { type HttpGetClient } from '@/infra/gateways'
-import { type FacebookAccountModel } from '@/domain/models'
+import { type FacebookAccountModel } from '@/domain/entities'
 import { type MockProxy, mock } from 'jest-mock-extended'
 
 describe('FacebookApi', () => {

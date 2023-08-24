@@ -1,4 +1,4 @@
-import { AuthenticationError } from '@/domain/errors'
+import { AuthenticationError } from '@/domain/entities/errors'
 import { type FacebookAuthentication } from '@/domain/features'
 import { type HttpRequest, type HttpResponse, unauthorized, ok } from '../helpers'
 import { type Validator, ValidationBuilder } from '../validation'
