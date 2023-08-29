@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/await-thenable,  @typescript-eslint/no-confusing-void-expression */
 import { type Controller } from '@/application/controllers'
-import { adaptExpressRoute } from '@/infra/gateways'
+import { adaptExpressRoute } from '@/main/adapters'
 
 import { type Request, type RequestHandler, type Response, type NextFunction } from 'express'
 import { getMockReq, getMockRes } from '@jest-mock/express'

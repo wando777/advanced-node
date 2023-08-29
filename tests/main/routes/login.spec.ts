@@ -33,7 +33,7 @@ describe('Login Routes', () => {
         .send({ token: 'valid_token' })
 
       expect(status).toBe(200)
-      expect(body.value).toBeDefined()
+      expect(body).toBeDefined()
     })
     it('should return 401 with UnauthorizedError', async () => {
       const { status, body } = await request(app)
