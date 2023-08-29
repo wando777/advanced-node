@@ -1,3 +1,5 @@
+import { type TokenValidator } from '@/domain/contracts/crypto'
+import { type Authorize, setupAuthorize } from '@/domain/use-cases'
 import { mock, type MockProxy } from 'jest-mock-extended'
 
 jest.mock('@/domain/entities/facebook-account-model')
@@ -31,26 +33,3 @@ describe('Authorize', () => {
     expect(crypto.validateToken).toHaveBeenCalledTimes(1)
   })
 })
-
-export interface TokenValidator {
-  validateToken: (params: TokenValidator.Params) => Promise<TokenValidator.Result>
-}
-
-export namespace TokenValidator {
-  export type Params = {
-    token: string
-  }
-  export type Result = string
-}
-
-type Input = { token: string }
-type Output = string
-type Setup = (crypto: TokenValidator) => Authorize
-type Authorize = (params: Input) => Promise<Output>
-
-const setupAuthorize: Setup = (crypto) => {
-  return async (params) => {
-    const userId = await crypto.validateToken(params)
-    return userId
-  }
-}
