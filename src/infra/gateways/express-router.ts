@@ -2,7 +2,9 @@
 import { type Controller } from '@/application/controllers'
 import { type RequestHandler } from 'express'
 
-export const adaptExpressRoute = (controller: Controller): RequestHandler => {
+type Adapter = (controller: Controller) => RequestHandler
+
+export const adaptExpressRoute: Adapter = (controller) => {
   return async (req, res) => {
     const { statusCode, data } = await controller.handle({ ...req.body })
     const jsonBody = statusCode === 200 ? data : { error: data.message }

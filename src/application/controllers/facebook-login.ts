@@ -1,5 +1,5 @@
 import { AuthenticationError } from '@/domain/entities/errors'
-import { type FacebookAuthentication } from '@/domain/features'
+import { type FacebookAuthentication } from '@/domain/use-cases'
 import { type HttpRequest, type HttpResponse, unauthorized, ok } from '../helpers'
 import { type Validator, ValidationBuilder } from '../validation'
 import { Controller } from './controller'
@@ -10,7 +10,7 @@ export class FacebookLoginController extends Controller {
   }
 
   async perform({ token }: HttpRequest): Promise<HttpResponse> {
-    const res = await this.facebookAuth.perform({ token })
+    const res = await this.facebookAuth({ token })
     return res instanceof AuthenticationError ? unauthorized() : ok(res)
   }
 

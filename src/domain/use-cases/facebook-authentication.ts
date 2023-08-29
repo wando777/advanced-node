@@ -1,4 +1,3 @@
-import { type FacebookAuthentication } from '@/domain/features'
 import { AuthenticationError } from '@/domain/entities/errors'
 import { AccessToken, FacebookAccount } from '@/domain/entities'
 import { type TokenGenerator } from '../contracts/crypto'
@@ -8,26 +7,31 @@ import {
 } from '../contracts/repositories'
 import { type LoadFacebookUserApi } from '../contracts/apis'
 
-export class FacebookAuthenticationUseCase implements FacebookAuthentication {
-  constructor(
-    private readonly loadFacebookUserApi: LoadFacebookUserApi,
-    private readonly loadUserAccountRepository: LoadUserAccountRepository,
-    private readonly saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository,
-    private readonly cryptyo: TokenGenerator
-  ) { }
+export type FacebookAuthentication = (params: { token: string }) =>
+Promise<AccessToken | AuthenticationError>
+type SetupTypes = (
+  loadFacebookUserApi: LoadFacebookUserApi,
+  loadUserAccountRepository: LoadUserAccountRepository,
+  saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository,
+  cryptyo: TokenGenerator
+) => FacebookAuthentication
 
-  async perform(
-    input: FacebookAuthentication.Input
-  ): Promise<FacebookAuthentication.Output> {
-    const facebookUserData = await this.loadFacebookUserApi.loadUser(input)
+export const setupFacebookAuthentication: SetupTypes = (
+  loadFacebookUserApi,
+  loadUserAccountRepository,
+  saveAccountFromFacebookRepository,
+  cryptyo
+) => {
+  return async (params) => {
+    const facebookUserData = await loadFacebookUserApi.loadUser(params)
     if (facebookUserData !== undefined) {
-      const userData = await this.loadUserAccountRepository.load(
+      const userData = await loadUserAccountRepository.load(
         facebookUserData
       )
       const fbAccount = new FacebookAccount(facebookUserData, userData)
       const newAccount =
-        await this.saveAccountFromFacebookRepository.saveWithFacebook(fbAccount)
-      const token = await this.cryptyo.generateToken({
+        await saveAccountFromFacebookRepository.saveWithFacebook(fbAccount)
+      const token = await cryptyo.generateToken({
         key: newAccount.userId,
         expirationInMs: AccessToken.expirationInMs
       })
