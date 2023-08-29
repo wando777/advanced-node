@@ -1,9 +1,9 @@
+import { type FacebookAuthentication, setupFacebookAuthentication } from '@/domain/use-cases'
 import { makeFacebookApi, makeJwtGenerator } from '../../infra/gateways'
 import { makePgUserAccountRepo } from '../../infra/repos'
-import { FacebookAuthenticationUseCase } from '@/domain/use-cases'
 
-export const makeFacebookAuthentication = (): FacebookAuthenticationUseCase => {
-  return new FacebookAuthenticationUseCase(
+export const makeFacebookAuthentication = (): FacebookAuthentication => {
+  return setupFacebookAuthentication(
     makeFacebookApi(),
     makePgUserAccountRepo(),
     makePgUserAccountRepo(),
