@@ -7,8 +7,10 @@ import {
 } from '../contracts/repositories'
 import { type LoadFacebookUserApi } from '../contracts/apis'
 
-export type FacebookAuthentication = (params: { token: string }) =>
-Promise<{ accessToken: string }>
+type Input = { token: string }
+type Output = { accessToken: string }
+export type FacebookAuthentication = (params: Input) =>
+Promise<Output>
 type SetupTypes = (
   loadFacebookUserApi: LoadFacebookUserApi,
   loadUserAccountRepository: LoadUserAccountRepository,
