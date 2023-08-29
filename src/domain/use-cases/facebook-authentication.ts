@@ -8,7 +8,7 @@ import {
 import { type LoadFacebookUserApi } from '../contracts/apis'
 
 export type FacebookAuthentication = (params: { token: string }) =>
-Promise<AccessToken | AuthenticationError>
+Promise<{ accessToken: string }>
 type SetupTypes = (
   loadFacebookUserApi: LoadFacebookUserApi,
   loadUserAccountRepository: LoadUserAccountRepository,
@@ -35,8 +35,8 @@ export const setupFacebookAuthentication: SetupTypes = (
         key: newAccount.userId,
         expirationInMs: AccessToken.expirationInMs
       })
-      return new AccessToken(token.value)
+      return { accessToken: token.value }
     }
-    return new AuthenticationError()
+    throw new AuthenticationError()
   }
 }
