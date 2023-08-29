@@ -10,6 +10,7 @@ describe('Authorize', () => {
   beforeAll(() => {
     token = 'any_token'
     crypto = mock()
+    crypto.validateToken.mockResolvedValue('any_id')
   })
 
   beforeEach(() => {
@@ -23,24 +24,33 @@ describe('Authorize', () => {
     expect(crypto.validateToken).toHaveBeenCalledWith({ token })
     expect(crypto.validateToken).toHaveBeenCalledTimes(1)
   })
+  it('Should return the correct accessToken', async () => {
+    const userId = await sut({ token })
+
+    expect(userId).toBe('any_id')
+    expect(crypto.validateToken).toHaveBeenCalledTimes(1)
+  })
 })
 
 export interface TokenValidator {
-  validateToken: (params: TokenValidator.Params) => Promise<void>
+  validateToken: (params: TokenValidator.Params) => Promise<TokenValidator.Result>
 }
 
 export namespace TokenValidator {
   export type Params = {
     token: string
   }
+  export type Result = string
 }
 
 type Input = { token: string }
+type Output = string
 type Setup = (crypto: TokenValidator) => Authorize
-type Authorize = (params: Input) => Promise<void>
+type Authorize = (params: Input) => Promise<Output>
 
 const setupAuthorize: Setup = (crypto) => {
   return async (params) => {
-    await crypto.validateToken(params)
+    const userId = await crypto.validateToken(params)
+    return userId
   }
 }
