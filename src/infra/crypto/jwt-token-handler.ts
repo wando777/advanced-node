@@ -1,7 +1,7 @@
 import { type TokenGenerator } from '@/domain/contracts/crypto'
 import { sign } from 'jsonwebtoken'
 
-export class JwtTokenGenerator implements TokenGenerator {
+export class JwtTokenHandler implements TokenGenerator {
   constructor(private readonly jwtSecret: string) {}
   async generateToken(
     input: Input
