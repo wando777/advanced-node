@@ -61,12 +61,15 @@ describe('FacebookAuthentication', () => {
 
   it('Should call LoadFacebookUserApi with correct parameter', async () => {
     await sut({ token })
+
     expect(loadFacebookUserApi.loadUser).toHaveBeenCalledWith({ token })
     expect(loadFacebookUserApi.loadUser).toHaveBeenCalledTimes(1)
   })
   it('Should throw AuthenticationError when LoadFacebookUserApi returns undefined', async () => {
     loadFacebookUserApi.loadUser.mockResolvedValueOnce(undefined)
+
     const promise = sut({ token })
+
     await expect(promise).rejects.toThrow(new AuthenticationError())
   })
   it('Should call LoadUserAccountRepository when LoadFacebookUserApi returns data', async () => {
