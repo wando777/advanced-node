@@ -62,8 +62,8 @@ export class AuthenticationMiddleware {
   }
 
   async handle({ authorization }: HttpRequest): Promise<HttpResponse<Model>> {
-    const error = new Required(authorization, 'authorization').validate()
-    if (error != null) {
+    const isError = this.validate({ authorization })
+    if (isError) {
       return forbidden()
     }
     try {
@@ -72,5 +72,10 @@ export class AuthenticationMiddleware {
     } catch {
       return forbidden()
     }
+  }
+
+  private validate({ authorization }: HttpRequest): boolean {
+    const error = new Required(authorization, 'authorization').validate()
+    return !(error === undefined)
   }
 }
