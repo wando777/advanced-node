@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-misused-promises, @typescript-eslint/await-thenable,  @typescript-eslint/no-confusing-void-expression */
 
 import { type HttpResponse } from '@/application/helpers'
 import { getMockReq, getMockRes } from '@jest-mock/express'
@@ -22,10 +22,14 @@ describe('Express middleware', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     sut = adaptExpressMiddleware(middleware)
+    middleware.handle.mockResolvedValue({
+      statusCode: 500,
+      data: { error: 'any_error' }
+    })
   })
 
   it('should call handle with correct request', async () => {
-    sut(req, res, next)
+    await sut(req, res, next)
 
     expect(middleware.handle).toHaveBeenCalledWith({ any: 'any' })
     expect(middleware.handle).toHaveBeenCalledTimes(1)
@@ -33,10 +37,18 @@ describe('Express middleware', () => {
   it('should call handle with empty request', async () => {
     req = getMockReq()
 
-    sut(req, res, next)
+    await sut(req, res, next)
 
     expect(middleware.handle).toHaveBeenCalledWith({})
     expect(middleware.handle).toHaveBeenCalledTimes(1)
+  })
+  it('should respond with correct error and statusCode', async () => {
+    await sut(req, res, next)
+
+    expect(res.status).toHaveBeenCalledWith(500)
+    expect(res.status).toHaveBeenCalledTimes(1)
+    expect(res.json).toHaveBeenCalledWith({ error: 'any_error' })
+    expect(res.json).toHaveBeenCalledTimes(1)
   })
 })
 
@@ -44,7 +56,8 @@ type Adapter = (middleware: Middleware) => RequestHandler
 
 const adaptExpressMiddleware: Adapter = (middleware) => {
   return async (req, res, next) => {
-    await middleware.handle({ ...req.headers })
+    const { statusCode, data } = await middleware.handle({ ...req.headers })
+    res.status(statusCode).json(data)
   }
 }
 
