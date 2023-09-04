@@ -1,7 +1,7 @@
 import { type TokenValidator, type TokenGenerator } from '@/domain/contracts/crypto'
 import { type JwtPayload, sign, verify } from 'jsonwebtoken'
 
-export class JwtTokenHandler implements TokenGenerator {
+export class JwtTokenHandler implements TokenGenerator, TokenValidator {
   constructor(private readonly jwtSecret: string) { }
   async generateToken(
     input: TokenGenerator.Input
