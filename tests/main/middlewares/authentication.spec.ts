@@ -1,6 +1,6 @@
 import { ForbiddenError } from '@/application/errors'
 import { app } from '@/main/config/app'
-import env from '@/main/config/env'
+import { env } from '@/main/config/env'
 import { auth } from '@/main/middlewares'
 import { sign } from 'jsonwebtoken'
 
