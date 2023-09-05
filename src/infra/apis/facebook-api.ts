@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { type LoadFacebookUserApi } from '@/domain/contracts/apis'
+import { type LoadFacebookUser } from '@/domain/contracts/gateways'
 import { type HttpGetClient } from '../gateways'
 
-export class FacebookApi implements LoadFacebookUserApi {
+export class FacebookApi implements LoadFacebookUser {
   private readonly baseUrl = 'https://graph.facebook.com'
   private readonly client_id = this.clientCredentials.client_id
   private readonly client_secret = this.clientCredentials.client_secret
@@ -16,7 +16,7 @@ export class FacebookApi implements LoadFacebookUserApi {
     input: Input
   ): Promise<Result> {
     try {
-      const facebookUser: LoadFacebookUserApi.FacebookUserData =
+      const facebookUser: LoadFacebookUser.FacebookUserData =
         await this.getUserInfo(input.token)
       return facebookUser
     } catch {
@@ -78,5 +78,5 @@ type DebugToken = {
   }
 }
 
-type Result = LoadFacebookUserApi.Result
-type Input = LoadFacebookUserApi.Input
+type Result = LoadFacebookUser.Result
+type Input = LoadFacebookUser.Input

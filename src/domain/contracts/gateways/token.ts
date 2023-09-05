@@ -1,5 +1,5 @@
 export interface TokenGenerator {
-  generateToken: (input: TokenGenerator.Input) => Promise<TokenGenerator.Output>
+  generate: (input: TokenGenerator.Input) => Promise<TokenGenerator.Output>
 }
 
 export namespace TokenGenerator {
@@ -14,7 +14,7 @@ export namespace TokenGenerator {
 }
 
 export interface TokenValidator {
-  validateToken: (params: TokenValidator.Params) => Promise<TokenValidator.Result>
+  validate: (params: TokenValidator.Params) => Promise<TokenValidator.Result>
 }
 
 export namespace TokenValidator {

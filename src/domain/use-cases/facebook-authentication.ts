@@ -1,31 +1,30 @@
 import { AuthenticationError } from '@/domain/entities/errors'
 import { AccessToken, FacebookAccount } from '@/domain/entities'
-import { type TokenGenerator } from '../contracts/crypto'
 import {
   type LoadUserAccountRepository,
   type SaveUserAccountFromFacebookRepository
 } from '../contracts/repositories'
-import { type LoadFacebookUserApi } from '../contracts/apis'
+import { type TokenGenerator, type LoadFacebookUser } from '../contracts/gateways'
 
 type Input = { token: string }
 type Output = { accessToken: string }
 export type FacebookAuthentication = (params: Input) =>
 Promise<Output>
 type SetupTypes = (
-  loadFacebookUserApi: LoadFacebookUserApi,
+  facebook: LoadFacebookUser,
   loadUserAccountRepository: LoadUserAccountRepository,
   saveAccountFromFacebookRepository: SaveUserAccountFromFacebookRepository,
-  cryptyo: TokenGenerator
+  token: TokenGenerator
 ) => FacebookAuthentication
 
 export const setupFacebookAuthentication: SetupTypes = (
-  loadFacebookUserApi,
+  facebook,
   loadUserAccountRepository,
   saveAccountFromFacebookRepository,
-  cryptyo
+  token
 ) => {
   return async (params) => {
-    const facebookUserData = await loadFacebookUserApi.loadUser(params)
+    const facebookUserData = await facebook.loadUser(params)
     if (facebookUserData !== undefined) {
       const userData = await loadUserAccountRepository.load(
         facebookUserData
@@ -33,11 +32,11 @@ export const setupFacebookAuthentication: SetupTypes = (
       const fbAccount = new FacebookAccount(facebookUserData, userData)
       const newAccount =
         await saveAccountFromFacebookRepository.saveWithFacebook(fbAccount)
-      const token = await cryptyo.generateToken({
+      const returnedToken = await token.generate({
         key: newAccount.userId,
         expirationInMs: AccessToken.expirationInMs
       })
-      return { accessToken: token.value }
+      return { accessToken: returnedToken.value }
     }
     throw new AuthenticationError()
   }

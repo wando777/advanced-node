@@ -19,13 +19,13 @@ describe('JwtTokenHandler', () => {
     sut = new JwtTokenHandler(jwtParams.secret)
   })
 
-  describe('generateToken', () => {
+  describe('generate', () => {
     beforeAll(() => {
       fakeJwt.sign.mockImplementation(() => validTokenMock)
     })
 
     it('Should call sign with correct params', async () => {
-      await sut.generateToken({ key: jwtParams.key, expirationInMs: 3000 })
+      await sut.generate({ key: jwtParams.key, expirationInMs: 3000 })
 
       expect(fakeJwt.sign).toHaveBeenCalledWith(
         { key: jwtParams.key },
@@ -35,7 +35,7 @@ describe('JwtTokenHandler', () => {
       expect(fakeJwt.sign).toHaveBeenCalledTimes(1)
     })
     it('Should return a valid token on success', async () => {
-      const token = await sut.generateToken({
+      const token = await sut.generate({
         key: jwtParams.key,
         expirationInMs: 3000
       })
@@ -46,7 +46,7 @@ describe('JwtTokenHandler', () => {
       fakeJwt.sign.mockImplementationOnce(() => {
         throw new Error('token_generator_error')
       })
-      const promise = sut.generateToken({
+      const promise = sut.generate({
         key: jwtParams.key,
         expirationInMs: 3000
       })
@@ -54,18 +54,18 @@ describe('JwtTokenHandler', () => {
     })
   })
 
-  describe('validateToken', () => {
+  describe('validate', () => {
     beforeAll(() => {
       fakeJwt.verify.mockImplementation(() => ({ key: jwtParams.key }))
     })
     it('Should call validate with correct params', async () => {
-      await sut.validateToken({ token: validTokenMock })
+      await sut.validate({ token: validTokenMock })
 
       expect(fakeJwt.verify).toHaveBeenCalledWith(validTokenMock, jwtParams.secret)
       expect(fakeJwt.verify).toHaveBeenCalledTimes(1)
     })
     it('Should the key decrypted used to sign', async () => {
-      const generatedKey = await sut.validateToken({ token: validTokenMock })
+      const generatedKey = await sut.validate({ token: validTokenMock })
 
       expect(generatedKey).toBe(jwtParams.key)
     })
@@ -74,14 +74,14 @@ describe('JwtTokenHandler', () => {
         throw new Error('key_error')
       })
 
-      const promise = sut.validateToken({ token: validTokenMock })
+      const promise = sut.validate({ token: validTokenMock })
 
       await expect(promise).rejects.toThrow(new Error('key_error'))
     })
     it('Should thrown if verify returns null', async () => {
       fakeJwt.verify.mockImplementationOnce(() => null)
 
-      const promise = sut.validateToken({ token: validTokenMock })
+      const promise = sut.validate({ token: validTokenMock })
 
       await expect(promise).rejects.toThrow()
     })
