@@ -17,6 +17,7 @@ describe('ChangeProfilePicture', () => {
     crypto.generate.mockReturnValue(uuid)
   })
   beforeEach(() => {
+    jest.clearAllMocks()
     sut = setupChangeProfilePicture(fileStorage, crypto)
   })
   it('should call UploadFile with correct inputs', async () => {
@@ -24,5 +25,10 @@ describe('ChangeProfilePicture', () => {
 
     expect(fileStorage.upload).toHaveBeenCalledWith({ file, key: uuid })
     expect(fileStorage.upload).toHaveBeenCalledTimes(1)
+  })
+  it('should not call UploadFile when file is undefined', async () => {
+    await sut({ id: 'any_userId', file: undefined })
+
+    expect(fileStorage.upload).not.toHaveBeenCalled()
   })
 })

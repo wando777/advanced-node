@@ -9,7 +9,7 @@
     "dev": "ts-node-dev --respawn --transpile-only -r dotenv/config --inspect=0.0.0.0:9229 src/main",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest --passWithNoTests --no-cache --runInBand",
+    "test": "jest --passWithNoTests --no-cache --runInBand --detectOpenHandles",
     "test:watch": "npm t -- --watch",
     "test:staged": "npm t -- --findRelatedTests",
     "test:coverage": "npm t -- --coverage",
