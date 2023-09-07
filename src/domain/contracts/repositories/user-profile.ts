@@ -6,7 +6,7 @@ export interface SaveUserPicture {
 
 export namespace SaveUserPicture {
   export type Input = {
-    pictureUrl: string
+    pictureUrl?: string
   }
   export type Output = string
 }

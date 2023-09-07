@@ -6,8 +6,9 @@ export type ChangeProfilePicture = (input: Input) => Promise<void>
 type Setup = (fileStorage: UploadFile, crypto: UUIDGenerator, userProfileRepo: SaveUserPicture) => ChangeProfilePicture
 
 export const setupChangeProfilePicture: Setup = (fileStorage, crypto, userProfileRepo) => async ({ id, file }) => {
+  let pictureUrl: string | undefined
   if (file != null) {
-    const pictureUrl = await fileStorage.upload({ file, key: crypto.generate({ key: id }) })
-    await userProfileRepo.savePicture({ pictureUrl })
+    pictureUrl = await fileStorage.upload({ file, key: crypto.generate({ key: id }) })
   }
+  await userProfileRepo.savePicture({ pictureUrl })
 }
