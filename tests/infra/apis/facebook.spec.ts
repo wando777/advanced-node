@@ -72,6 +72,7 @@ describe('FacebookApi', () => {
   })
   it('should returns facebook user info', async () => {
     const facebookUser = await sut.loadUser({ token: clientToken })
+
     expect(facebookUser).toEqual(facebookUserMock)
   })
   it('should returns undefined if HttpGetClient throws', async () => {
