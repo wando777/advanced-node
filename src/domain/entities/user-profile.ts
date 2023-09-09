@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 export class UserProfile {
   initials?: string
   pictureUrl?: string
@@ -6,11 +7,11 @@ export class UserProfile {
 
   setPicture({ pictureUrl, name }: { pictureUrl?: string, name?: string }): void {
     this.pictureUrl = pictureUrl
-    if (name !== undefined && pictureUrl === undefined) {
+    if (name !== undefined && pictureUrl === undefined && name !== '') {
       name = name.toUpperCase()
-      const firstLetters = name.match(/\b(.)/g) ?? []
+      const firstLetters = name.match(/\b(.)/g)!
       if (firstLetters.length > 1) {
-        this.initials = `${firstLetters.shift() ?? ''}${firstLetters.pop() ?? ''}`
+        this.initials = `${firstLetters.shift()!}${firstLetters.pop()!}`
       } else {
         this.initials = name?.substring(0, 2)
       }
