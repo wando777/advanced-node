@@ -1,6 +1,7 @@
 export class UserProfile {
   initials?: string
   pictureUrl?: string
+
   constructor(readonly id: string) { }
 
   setPicture({ pictureUrl, name }: { pictureUrl?: string, name?: string }): void {
