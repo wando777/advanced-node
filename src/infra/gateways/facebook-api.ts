@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { type LoadFacebookUser } from '@/domain/contracts/gateways'
-import { type HttpGetClient } from '../gateways'
+import { type HttpGetClient } from '.'
 
 export class FacebookApi implements LoadFacebookUser {
   private readonly baseUrl = 'https://graph.facebook.com'

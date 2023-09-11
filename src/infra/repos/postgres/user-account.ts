@@ -4,7 +4,7 @@ import {
   type LoadUserAccountRepository
 } from '@/domain/contracts/repositories'
 import { getRepository } from 'typeorm'
-import { PgUser } from '../entities'
+import { PgUser } from './entities'
 
 type SaveParams = SaveUserAccountFromFacebookRepository.Input
 type SaveResult = SaveUserAccountFromFacebookRepository.NewUserId
