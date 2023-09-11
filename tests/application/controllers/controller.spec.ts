@@ -17,7 +17,7 @@ class ControllerStub extends Controller {
   }
 }
 
-describe('FacebookLoginController', () => {
+describe('Controller', () => {
   let sut: ControllerStub
   beforeAll(() => {
   })
