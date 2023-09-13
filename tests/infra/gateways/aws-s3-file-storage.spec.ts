@@ -5,10 +5,10 @@ import { mocked } from 'jest-mock'
 jest.mock('aws-sdk')
 
 describe('AwsS3FileStorage', () => {
-  let accessKeyId = 'any_id'
-  let secretAccessKey = 'any_secret'
-  let key: string
+  let accessKeyId: string
+  let secretAccessKey: string
   let bucket: string
+  let key: string
   let sut: AwsS3FileStorage
   beforeAll(() => {
     accessKeyId = 'any_id'
@@ -75,6 +75,25 @@ describe('AwsS3FileStorage', () => {
     })
   })
   describe('DeleteFile', () => {
+    let deleteObjectPromiseSpy: jest.Mock
+    let deleteObjectSpy: jest.Mock
 
+    beforeAll(() => {
+      deleteObjectPromiseSpy = jest.fn()
+      deleteObjectSpy = jest.fn().mockImplementation(() => ({ promise: deleteObjectPromiseSpy }))
+      mocked(S3).mockImplementation(jest.fn().mockImplementation(() => ({ deleteObject: deleteObjectSpy })))
+    })
+
+    it('should call deleteObject with correct input', async () => {
+      await sut.delete({ key })
+
+      expect(deleteObjectSpy).toHaveBeenCalledWith({
+        Bucket: bucket,
+        Key: key
+      })
+
+      expect(deleteObjectSpy).toHaveBeenCalledTimes(1)
+      expect(deleteObjectPromiseSpy).toHaveBeenCalledTimes(1)
+    })
   })
 })
