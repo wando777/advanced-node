@@ -62,6 +62,14 @@ describe('AwsS3FileStorage', () => {
 
     expect(imageUrl).toBe(url)
   })
+  it('should rethrow if putObject throws', async () => {
+    const error = new Error('upload_error')
+    putObjectPromiseSpy.mockRejectedValueOnce(error)
+
+    const promise = sut.upload({ key, file })
+
+    await expect(promise).rejects.toThrow()
+  })
 })
 
 export class AwsS3FileStorage implements UploadFile {
