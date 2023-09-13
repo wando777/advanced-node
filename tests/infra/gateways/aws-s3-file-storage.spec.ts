@@ -48,6 +48,20 @@ describe('AwsS3FileStorage', () => {
     expect(putObjectSpy).toHaveBeenCalledTimes(1)
     expect(putObjectPromiseSpy).toHaveBeenCalledTimes(1)
   })
+  it('should return imageUrl', async () => {
+    const url = `https://${bucket}.s3.amazonaws.com/${key}`
+
+    const imageUrl = await sut.upload({ key, file })
+
+    expect(imageUrl).toBe(url)
+  })
+  it('should return encoded imageUrl', async () => {
+    const url = `https://${bucket}.s3.amazonaws.com/${encodeURIComponent('any key')}`
+
+    const imageUrl = await sut.upload({ key: 'any key', file })
+
+    expect(imageUrl).toBe(url)
+  })
 })
 
 export class AwsS3FileStorage implements UploadFile {
