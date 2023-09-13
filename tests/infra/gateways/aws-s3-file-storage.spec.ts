@@ -10,6 +10,7 @@ describe('AwsS3FileStorage', () => {
   let bucket: string
   let key: string
   let sut: AwsS3FileStorage
+
   beforeAll(() => {
     accessKeyId = 'any_id'
     secretAccessKey = 'any_secret'
@@ -33,6 +34,7 @@ describe('AwsS3FileStorage', () => {
     let file: Buffer
     let putObjectPromiseSpy: jest.Mock
     let putObjectSpy: jest.Mock
+
     beforeAll(() => {
       file = Buffer.from('any_buffer')
       putObjectPromiseSpy = jest.fn()
@@ -83,7 +85,6 @@ describe('AwsS3FileStorage', () => {
       deleteObjectSpy = jest.fn().mockImplementation(() => ({ promise: deleteObjectPromiseSpy }))
       mocked(S3).mockImplementation(jest.fn().mockImplementation(() => ({ deleteObject: deleteObjectSpy })))
     })
-
     it('should call deleteObject with correct input', async () => {
       await sut.delete({ key })
 
@@ -94,6 +95,14 @@ describe('AwsS3FileStorage', () => {
 
       expect(deleteObjectSpy).toHaveBeenCalledTimes(1)
       expect(deleteObjectPromiseSpy).toHaveBeenCalledTimes(1)
+    })
+    it('should rethrow if putObject throws', async () => {
+      const error = new Error('delete_error')
+      deleteObjectPromiseSpy.mockRejectedValueOnce(error)
+
+      const promise = sut.delete({ key })
+
+      await expect(promise).rejects.toThrow()
     })
   })
 })
