@@ -8,7 +8,9 @@ export class PgUserProfileRepository implements SaveUserPicture, LoadUserProfile
     await pgUserRepo.update({ userId: parseInt(id) }, { pictureUrl, initials })
   }
 
-  async load(params: LoadUserProfile.Input): Promise<LoadUserProfile.Output> {
-    return await new Promise(resolve => { resolve({}) })
+  async load({ id }: LoadUserProfile.Input): Promise<LoadUserProfile.Output> {
+    const pgUserRepo = getRepository(PgUser)
+    const userProfile = await pgUserRepo.findOne({ userId: parseInt(id) })
+    return userProfile
   }
 }

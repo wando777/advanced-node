@@ -38,15 +38,16 @@ describe('PgUserProfileRepository', () => {
   })
   describe('loadPicture', () => {
     it('should load user profile', async () => {
-      const { userId } = await pgUserRepo.save({ email: 'any_email', initials: 'any_initials' })
+      const { userId } = await pgUserRepo.save({ email: 'any_email', name: 'any_name' })
 
-      await sut.savePicture({
-        id: userId.toString(),
-        pictureUrl: 'any_url'
-      })
-      const pgUser = await pgUserRepo.findOne({ userId })
+      const user = await sut.load({ id: userId.toString() })
 
-      expect(pgUser).toMatchObject({ userId, pictureUrl: 'any_url', initials: null })
+      expect(user?.name).toBe('any_name')
+    })
+    it('should return undefined if user does not exist', async () => {
+      const user = await sut.load({ id: '1' })
+
+      expect(user).toBeUndefined()
     })
   })
 })
