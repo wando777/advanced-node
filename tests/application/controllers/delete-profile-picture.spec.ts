@@ -1,5 +1,5 @@
 import { Controller } from '@/application/controllers'
-import { type HttpResponse, ok } from '@/application/helpers'
+import { type HttpResponse, noContent } from '@/application/helpers'
 import { type ChangeProfilePicture } from '@/domain/use-cases'
 
 describe('DeletePictureController', () => {
@@ -21,6 +21,14 @@ describe('DeletePictureController', () => {
     expect(changeProfilePicture).toHaveBeenCalledWith({ userId: 'any_user_id' })
     expect(changeProfilePicture).toHaveBeenCalledTimes(1)
   })
+  it('should return 204', async () => {
+    const httpResponse = await sut.handle({ userId: 'any_user_id' })
+
+    expect(httpResponse).toEqual({
+      statusCode: 204,
+      data: null
+    })
+  })
 })
 
 export class DeletePictureController extends Controller {
@@ -30,6 +38,6 @@ export class DeletePictureController extends Controller {
 
   async perform(httpRequest: any): Promise<HttpResponse> {
     await this.changeProfilePicture(httpRequest)
-    return await new Promise(resolve => { resolve(ok('')) })
+    return noContent()
   }
 }
