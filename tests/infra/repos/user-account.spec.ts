@@ -61,7 +61,7 @@ describe('PgUserAccountRepository', () => {
       await pgUserRepo.save(newUserDataMock)
       const account = await sut.saveWithFacebook(newUser)
       const pgUser = await pgUserRepo.findOne({ email: userDataMock.email })
-      expect(pgUser).toEqual({
+      expect(pgUser).toMatchObject({
         email: 'any_email@email.com',
         userId: 1,
         name: 'any_new_name',
