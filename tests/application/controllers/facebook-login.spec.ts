@@ -1,4 +1,4 @@
-import { FacebookLoginController } from '@/application/controllers'
+import { Controller, FacebookLoginController } from '@/application/controllers'
 import { UnauthorizedError } from '@/application/errors'
 import { Required } from '@/application/validation'
 import { AuthenticationError } from '@/domain/entities/errors'
@@ -24,6 +24,9 @@ describe('FacebookLoginController', () => {
     expect(validators).toEqual([
       new Required('any_token', 'token')
     ])
+  })
+  it('should extends Controller', async () => {
+    expect(sut).toBeInstanceOf(Controller)
   })
   it('should call FacebookAuthentication with correct params', async () => {
     await sut.handle({ token })
