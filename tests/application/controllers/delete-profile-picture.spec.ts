@@ -1,6 +1,4 @@
-import { Controller } from '@/application/controllers'
-import { type HttpResponse, noContent } from '@/application/helpers'
-import { type ChangeProfilePicture } from '@/domain/use-cases'
+import { Controller, DeletePictureController } from '@/application/controllers'
 
 describe('DeletePictureController', () => {
   let sut: DeletePictureController
@@ -30,14 +28,3 @@ describe('DeletePictureController', () => {
     })
   })
 })
-
-export class DeletePictureController extends Controller {
-  constructor(private readonly changeProfilePicture: ChangeProfilePicture) {
-    super()
-  }
-
-  async perform(httpRequest: any): Promise<HttpResponse> {
-    await this.changeProfilePicture(httpRequest)
-    return noContent()
-  }
-}
