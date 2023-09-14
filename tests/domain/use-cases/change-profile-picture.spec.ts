@@ -88,4 +88,12 @@ describe('ChangeProfilePicture', () => {
 
     await expect(promise).rejects.toThrow(new Error('save error'))
   })
+  it('should not call DeleteFile when file does not exist and SaveUserPicture throws', async () => {
+    userProfileRepo.load.mockResolvedValueOnce(undefined)
+
+    await sut({ id: 'any_userId', file })
+
+    expect(userProfileRepo.savePicture).toHaveBeenCalledWith(...mocked(UserProfile).mock.instances)
+    expect(userProfileRepo.savePicture).toHaveBeenCalledTimes(1)
+  })
 })
