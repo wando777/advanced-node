@@ -1,7 +1,6 @@
 import { Controller } from '@/application/controllers'
-import { RequiredFieldError } from '@/application/errors'
-import { type HttpResponse, badRequest, ok } from '@/application/helpers'
-import { type ChangeProfilePicture } from '@/domain/use-cases'
+import { SavePictureController } from '@/application/controllers/save-profile-picture'
+import { InvalidMymeTypeError, MaxFileSizeError, RequiredFieldError } from '@/application/errors'
 
 describe('SavePictureController', () => {
   let sut: SavePictureController
@@ -104,37 +103,3 @@ describe('SavePictureController', () => {
     })
   })
 })
-
-type HttpRequest = { file: { buffer: Buffer, mimeType: string }, userId: string }
-
-export class SavePictureController extends Controller {
-  static readonly MAX_FILE_SIZE: number = 5 * 1024 * 1024
-
-  constructor(private readonly changeProfilePicture: ChangeProfilePicture) {
-    super()
-  }
-
-  async perform({ file, userId }: HttpRequest): Promise<HttpResponse> {
-    if (file === undefined || file === null) return badRequest(new RequiredFieldError('file'))
-    if (file.buffer.length === 0) return badRequest(new RequiredFieldError('file'))
-    if (!['image/png', 'image/jpg', 'image/jpeg'].includes(file.mimeType)) return badRequest(new InvalidMymeTypeError(['png', 'jpeg']))
-    if (file.buffer.length > SavePictureController.MAX_FILE_SIZE) return badRequest(new MaxFileSizeError(5))
-    const userProfile = await this.changeProfilePicture({ id: userId, file: file.buffer })
-    return ok(userProfile)
-  }
-}
-
-class InvalidMymeTypeError extends Error {
-  /* eslint-disable @typescript-eslint/restrict-template-expressions */
-  constructor(allowed: string[]) {
-    super(`Allowed types: ${allowed}`)
-    this.name = 'InvalidMymeTypeError'
-  }
-}
-class MaxFileSizeError extends Error {
-  /* eslint-disable @typescript-eslint/restrict-template-expressions */
-  constructor(maxSizeInMb: number) {
-    super(`File upload limit is ${maxSizeInMb}mb`)
-    this.name = 'MaxFileSizeError'
-  }
-}

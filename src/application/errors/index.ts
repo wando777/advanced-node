@@ -1,1 +1,2 @@
-export * from './https-erros'
+export * from './http'
+export * from './validation'
