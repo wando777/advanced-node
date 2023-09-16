@@ -1,6 +1,6 @@
 import { Controller } from '@/application/controllers'
 import { RequiredFieldError } from '@/application/errors'
-import { type HttpResponse, badRequest } from '@/application/helpers'
+import { type HttpResponse, badRequest, ok } from '@/application/helpers'
 import { type ChangeProfilePicture } from '@/domain/use-cases'
 
 describe('SavePictureController', () => {
@@ -12,7 +12,7 @@ describe('SavePictureController', () => {
   // let file: { buffer: Buffer, mimeType: string }
   beforeAll(() => {
     userId = 'any_userId'
-    changeProfilePicture = jest.fn()
+    changeProfilePicture = jest.fn().mockResolvedValue({ initials: 'any_initials', pictureUrl: 'any_url' })
     buffer = Buffer.from('any_buffer')
     mimeType = 'image/png'
   })
@@ -90,10 +90,18 @@ describe('SavePictureController', () => {
     })
   })
   it('should call ChangeProfilePicture with correct inputs', async () => {
-    await sut.handle({ file: { buffer, mimeType: 'image/jpg' }, userId })
+    await sut.handle({ file: { buffer, mimeType }, userId })
 
     expect(changeProfilePicture).toHaveBeenCalledWith({ id: userId, file: buffer })
     expect(changeProfilePicture).toHaveBeenCalledTimes(1)
+  })
+  it('should return 200', async () => {
+    const httpResponse = await sut.handle({ file: { buffer, mimeType }, userId })
+
+    expect(httpResponse).toEqual({
+      statusCode: 200,
+      data: { initials: 'any_initials', pictureUrl: 'any_url' }
+    })
   })
 })
 
@@ -111,8 +119,8 @@ export class SavePictureController extends Controller {
     if (file.buffer.length === 0) return badRequest(new RequiredFieldError('file'))
     if (!['image/png', 'image/jpg', 'image/jpeg'].includes(file.mimeType)) return badRequest(new InvalidMymeTypeError(['png', 'jpeg']))
     if (file.buffer.length > SavePictureController.MAX_FILE_SIZE) return badRequest(new MaxFileSizeError(5))
-    await this.changeProfilePicture({ id: userId, file: file.buffer })
-    return await new Promise(resolve => { resolve({ statusCode: 200, data: null }) })
+    const userProfile = await this.changeProfilePicture({ id: userId, file: file.buffer })
+    return ok(userProfile)
   }
 }
 
