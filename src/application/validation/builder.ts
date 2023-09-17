@@ -1,4 +1,4 @@
-import { Required } from './required'
+import { RequiredString } from './required'
 import { type Validator } from './validation'
 
 export class ValidationBuilder {
@@ -12,7 +12,7 @@ export class ValidationBuilder {
   }
 
   required(): ValidationBuilder {
-    this.validators.push(new Required(this.value, this.fieldName))
+    this.validators.push(new RequiredString(this.value, this.fieldName))
     return this
   }
 

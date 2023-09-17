@@ -1,13 +1,29 @@
 import { RequiredFieldError } from '../errors'
+import { type Validator } from './validation'
 
-export class Required {
-  constructor(private readonly value: string,
-    private readonly fieldName: string
+export class Required implements Validator {
+  constructor(
+    readonly value: any,
+    readonly fieldName?: string
   ) { }
 
   validate(): Error | undefined {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!this.value || Object.keys(this.value).length === 0) {
+    if (this.value === null || this.value === undefined) {
+      return new RequiredFieldError(this.fieldName)
+    }
+  }
+}
+
+export class RequiredString extends Required {
+  constructor(
+    override readonly value: string,
+    override readonly fieldName?: string
+  ) {
+    super(value, fieldName)
+  }
+
+  override validate(): Error | undefined {
+    if (super.validate() !== undefined || this.value === '') {
       return new RequiredFieldError(this.fieldName)
     }
   }

@@ -1,6 +1,6 @@
 import { Controller, FacebookLoginController } from '@/application/controllers'
 import { UnauthorizedError } from '@/application/errors'
-import { Required } from '@/application/validation'
+import { RequiredString } from '@/application/validation'
 import { AuthenticationError } from '@/domain/entities/errors'
 
 jest.mock('@/application/validation/composite')
@@ -22,7 +22,7 @@ describe('FacebookLoginController', () => {
     const validators = sut.buildValidators({ token })
 
     expect(validators).toEqual([
-      new Required('any_token', 'token')
+      new RequiredString('any_token', 'token')
     ])
   })
   it('should extends Controller', async () => {
