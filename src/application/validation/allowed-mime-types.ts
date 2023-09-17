@@ -1,7 +1,7 @@
 import { InvalidMymeTypeError } from '../errors'
 import { type Validator } from './validation'
 
-type Extension = 'png' | 'jpg'
+export type Extension = 'png' | 'jpg'
 
 export class AllowedMimeTypes implements Validator {
   constructor(
