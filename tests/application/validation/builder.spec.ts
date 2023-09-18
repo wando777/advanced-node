@@ -44,7 +44,6 @@ describe('ValidationBuilder', () => {
 
     expect(validators).toEqual([new MaxFileSize(6, buffer)])
   })
-
   it('should return correct image validators', () => {
     const validators = ValidationBuilder
       .of({ value: { mimeType: 'image/png' } })
@@ -53,7 +52,6 @@ describe('ValidationBuilder', () => {
 
     expect(validators).toEqual([new AllowedMimeTypes(['png'], 'image/png')])
   })
-
   it('should return correct image validators', () => {
     const buffer = Buffer.from('any_buffer')
 
