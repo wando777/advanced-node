@@ -36,7 +36,7 @@ describe('PgUserProfileRepository', () => {
       expect(pgUser).toMatchObject({ userId, pictureUrl: 'any_url', initials: null })
     })
   })
-  describe('loadPicture', () => {
+  describe('load', () => {
     it('should load user profile', async () => {
       const { userId } = await pgUserRepo.save({ email: 'any_email', name: 'any_name' })
 

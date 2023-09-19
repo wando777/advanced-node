@@ -3,7 +3,7 @@ import { type HttpResponse, ok } from '../helpers'
 import { Controller } from './controller'
 import { ValidationBuilder, type Validator } from '../validation'
 
-type HttpRequest = { file: { buffer: Buffer, mimeType: string }, userId: string }
+type HttpRequest = { file?: { buffer: Buffer, mimeType: string }, userId: string }
 
 export class SavePictureController extends Controller {
   static readonly MAX_FILE_SIZE: number = 5 * 1024 * 1024
@@ -13,11 +13,12 @@ export class SavePictureController extends Controller {
   }
 
   async perform({ file, userId }: HttpRequest): Promise<HttpResponse> {
-    const userProfile = await this.changeProfilePicture({ id: userId, file })
-    return ok(userProfile)
+    const { initials, pictureUrl } = await this.changeProfilePicture({ id: userId, file })
+    return ok({ initials, pictureUrl })
   }
 
   override buildValidators({ file }: HttpRequest): Validator[] {
+    if (file === undefined) return []
     return [
       ...ValidationBuilder.of({ value: file, fieldName: 'file' })
         .required()

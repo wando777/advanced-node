@@ -1,3 +1,5 @@
 export * from './http-client'
 export * from './token-handler'
 export * from './facebook-api'
+export * from './file-storage'
+export * from './uuid'
