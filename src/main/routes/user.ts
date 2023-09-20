@@ -5,5 +5,5 @@ import { adaptExpressRoute as adapt } from '../adapters'
 
 export default (router: Router): void => {
   router.delete('/users/picture', auth, adapt(makeSavePictureController()))
-  router.put('/users/picture', auth, adapt(makeSavePictureController()))
+  router.put('/users/picture', auth)
 }
