@@ -3,3 +3,4 @@ dist
 coverage
 notes
 jest.integration.config.js
+ormconfig.js
