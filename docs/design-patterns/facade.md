@@ -1,3 +1,4 @@
+=> Design patter: Facade
 O padrão de projeto "Facade" é um padrão estrutural que fornece uma interface simplificada para um conjunto mais amplo de interfaces em um subsistema. Ele oculta a complexidade do sistema subjacente, tornando-o mais fácil de usar e reduzindo o acoplamento entre componentes. O padrão de projeto Facade é frequentemente usado quando você precisa simplificar uma interface complexa ou quando deseja fornecer uma interface única para interagir com várias partes de um sistema.
 
 Aqui está uma explicação do padrão Facade:

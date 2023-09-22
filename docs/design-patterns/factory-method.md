@@ -1,3 +1,4 @@
+=> Design patter: Factory Method
 Uma classe abstrata Creator, duas subclasses concretas ConcreteCreatorA e ConcreteCreatorB, uma classe abstrata Product e duas subclasses concretas ConcreteProductA e ConcreteProductB.
 
 O método factoryMethod() na classe Creator é abstrato, o que significa que suas subclasses concretas devem implementar esse método para criar instâncias de produtos específicos. Cada uma das subclasses concretas de Creator retorna um tipo específico de Product.
