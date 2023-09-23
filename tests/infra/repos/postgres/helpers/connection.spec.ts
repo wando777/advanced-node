@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-extraneous-class */
-import { createConnection, getConnectionManager } from 'typeorm'
+import { type Connection, createConnection, getConnection, getConnectionManager } from 'typeorm'
 import { mocked } from 'jest-mock'
 
 jest.mock('typeorm', () => ({
@@ -7,6 +7,7 @@ jest.mock('typeorm', () => ({
   PrimaryGeneratedColumn: jest.fn(),
   Column: jest.fn(),
   createConnection: jest.fn(),
+  getConnection: jest.fn(),
   getConnectionManager: jest.fn()
 }))
 
@@ -15,10 +16,13 @@ describe('PgConnection', () => {
   let getConnectionManagerSpy
   let createQueryRunnerSpy: jest.Mock
   let createConnectionSpy: jest.Mock
+  let getConnectionSpy: jest.Mock
+  let hasSpy: jest.Mock
 
   beforeAll(() => {
+    hasSpy = jest.fn().mockReturnValue(true)
     getConnectionManagerSpy = jest.fn().mockReturnValue({
-      has: jest.fn().mockReturnValueOnce(false)
+      has: hasSpy
     })
     mocked(getConnectionManager).mockImplementation(getConnectionManagerSpy)
     createQueryRunnerSpy = jest.fn()
@@ -26,6 +30,10 @@ describe('PgConnection', () => {
       createQueryRunner: createQueryRunnerSpy
     })
     mocked(createConnection).mockImplementation(createConnectionSpy)
+    getConnectionSpy = jest.fn().mockReturnValue({
+      createQueryRunner: createQueryRunnerSpy
+    })
+    mocked(getConnection).mockImplementation(getConnectionSpy)
   })
   beforeEach(() => {
     jest.clearAllMocks()
@@ -37,12 +45,22 @@ describe('PgConnection', () => {
     expect(sut).toBe(sut2)
   })
   it('should create a new connection', async () => {
-    const sut = PgConnection.getInstance()
+    hasSpy.mockReturnValueOnce(false)
 
     await sut.connect()
 
     expect(createConnectionSpy).toHaveBeenCalledWith()
     expect(createConnectionSpy).toHaveBeenCalledTimes(1)
+    expect(createQueryRunnerSpy).toHaveBeenCalledWith()
+    expect(createQueryRunnerSpy).toHaveBeenCalledTimes(1)
+  })
+  it('should use an enxisting connection', async () => {
+    const sut = PgConnection.getInstance()
+
+    await sut.connect()
+
+    expect(getConnectionSpy).toHaveBeenCalledWith()
+    expect(getConnectionSpy).toHaveBeenCalledTimes(1)
     expect(createQueryRunnerSpy).toHaveBeenCalledWith()
     expect(createQueryRunnerSpy).toHaveBeenCalledTimes(1)
   })
@@ -61,7 +79,12 @@ class PgConnection {
   }
 
   async connect(): Promise<void> {
-    const connection = await createConnection()
+    let connection: Connection
+    if (getConnectionManager().has('default')) {
+      connection = getConnection()
+    } else {
+      connection = await createConnection()
+    }
     connection.createQueryRunner()
   }
 }
