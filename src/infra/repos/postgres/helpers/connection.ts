@@ -1,4 +1,4 @@
-import { type QueryRunner, type Connection, getConnectionManager, getConnection, createConnection } from 'typeorm'
+import { type QueryRunner, type Connection, getConnectionManager, getConnection, createConnection, type ObjectType, type Repository, type ObjectLiteral } from 'typeorm'
 import { ConnectionNotFoundError } from '.'
 
 export class PgConnection {
@@ -48,5 +48,10 @@ export class PgConnection {
   async rollback(): Promise<void> {
     if (this.query === undefined) throw new ConnectionNotFoundError()
     await this.query.rollbackTransaction()
+  }
+
+  getRepository<Entity extends ObjectLiteral>(entity: ObjectType<Entity>): Repository<Entity> {
+    if (this.query === undefined) throw new ConnectionNotFoundError()
+    return this.query.manager.getRepository(entity)
   }
 }

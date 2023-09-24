@@ -2,26 +2,29 @@ import { PgUser } from '@/infra/repos/postgres/entities'
 import { makeFakeDb } from '../../infra/repos/postgres/mocks/make-fake-db'
 import { app } from '@/main/config/app'
 import { type IBackup } from 'pg-mem'
-import { type Repository, getConnection, getRepository } from 'typeorm'
+import { type Repository } from 'typeorm'
 import { env } from '@/main/config/env'
 import { sign } from 'jsonwebtoken'
 import request from 'supertest'
+import { PgConnection } from '@/infra/repos/postgres/helpers'
 
 describe('User Routes', () => {
   let backupDb: IBackup
   let pgUserRepo: Repository<PgUser>
+  let connection: PgConnection
 
   beforeAll(async () => {
+    connection = PgConnection.getInstance()
     const db = await makeFakeDb([PgUser])
     backupDb = db.backup()
-    pgUserRepo = getRepository(PgUser)
+    pgUserRepo = connection.getRepository(PgUser)
   })
   beforeEach(() => {
     jest.clearAllMocks()
     backupDb.restore()
   })
   afterAll(async () => {
-    await getConnection().close()
+    await connection.disconnect()
   })
   describe('DELETE /users/picture', () => {
     it('should return 403 if no authorization header is present', async () => {
