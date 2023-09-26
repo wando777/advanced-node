@@ -1,10 +1,17 @@
-import { mock } from 'jest-mock-extended'
+import { type MockProxy, mock } from 'jest-mock-extended'
 
 describe('DbTransactionController', () => {
-  it('shoudld open transaction', async () => {
-    const db = mock<DbTransaction>()
-    const sut = new DbTransactionController(db)
+  let sut: DbTransactionController
+  let db: MockProxy<DbTransaction>
 
+  beforeAll(() => {
+    db = mock()
+  })
+  beforeEach(() => {
+    jest.clearAllMocks()
+    sut = new DbTransactionController(db)
+  })
+  it('shoudld open transaction', async () => {
     await sut.perform({ any: 'any' })
 
     expect(db.openTransaction).toHaveBeenCalled()
