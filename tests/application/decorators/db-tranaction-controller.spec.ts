@@ -1,4 +1,5 @@
 import { type Controller } from '@/application/controllers'
+import { type HttpResponse } from '@/application/helpers'
 import { type MockProxy, mock } from 'jest-mock-extended'
 
 describe('DbTransactionController', () => {
@@ -9,6 +10,7 @@ describe('DbTransactionController', () => {
   beforeAll(() => {
     db = mock()
     decoratee = mock()
+    decoratee.perform.mockResolvedValue({ statusCode: 204, data: null })
   })
   beforeEach(() => {
     jest.clearAllMocks()
@@ -44,6 +46,11 @@ describe('DbTransactionController', () => {
     expect(db.closeTransaction).toHaveBeenCalledWith()
     expect(db.closeTransaction).toHaveBeenCalledTimes(1)
   })
+  it('shoudld return same decoratee result on success', async () => {
+    const result = await sut.perform({ any: 'any' })
+
+    expect(result).toEqual({ statusCode: 204, data: null })
+  })
 })
 
 class DbTransactionController {
@@ -52,15 +59,18 @@ class DbTransactionController {
     private readonly db: DbTransaction
   ) { }
 
-  async perform(httpRequest: any): Promise<void> {
+  async perform(httpRequest: any): Promise<HttpResponse | undefined> {
+    let response: HttpResponse
     await this.db.openTransaction()
     try {
-      await this.decoratee.perform(httpRequest)
+      response = await this.decoratee.perform(httpRequest)
       await this.db.commit()
+      await this.db.closeTransaction()
+      return response
     } catch {
       await this.db.rollback()
+      await this.db.closeTransaction()
     }
-    await this.db.closeTransaction()
   }
 }
 
