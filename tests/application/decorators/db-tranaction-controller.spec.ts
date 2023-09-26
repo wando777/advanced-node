@@ -1,4 +1,4 @@
-import { type Controller } from '@/application/controllers'
+import { Controller } from '@/application/controllers'
 import { type HttpResponse } from '@/application/helpers'
 import { type MockProxy, mock } from 'jest-mock-extended'
 
@@ -15,6 +15,9 @@ describe('DbTransactionController', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     sut = new DbTransactionController(decoratee, db)
+  })
+  it('should extend Controller', async () => {
+    expect(sut).toBeInstanceOf(Controller)
   })
   it('shoudld open transaction', async () => {
     await sut.perform({ any: 'any' })
@@ -61,13 +64,13 @@ describe('DbTransactionController', () => {
   })
 })
 
-class DbTransactionController {
+class DbTransactionController extends Controller {
   constructor(
     private readonly decoratee: Controller,
     private readonly db: DbTransaction
-  ) { }
+  ) { super() }
 
-  async perform(httpRequest: any): Promise<HttpResponse | undefined> {
+  async perform(httpRequest: any): Promise<HttpResponse> {
     let response: HttpResponse
     await this.db.openTransaction()
     try {
