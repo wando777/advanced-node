@@ -33,6 +33,17 @@ describe('DbTransactionController', () => {
     expect(db.closeTransaction).toHaveBeenCalledWith()
     expect(db.closeTransaction).toHaveBeenCalledTimes(1)
   })
+  it('shoudld rollback and close transaction on failure', async () => {
+    decoratee.perform.mockRejectedValueOnce(new Error('decoratee_error'))
+
+    await sut.perform({ any: 'any' })
+
+    expect(db.commit).not.toHaveBeenCalledWith()
+    expect(db.rollback).toHaveBeenCalledWith()
+    expect(db.rollback).toHaveBeenCalledTimes(1)
+    expect(db.closeTransaction).toHaveBeenCalledWith()
+    expect(db.closeTransaction).toHaveBeenCalledTimes(1)
+  })
 })
 
 class DbTransactionController {
@@ -43,8 +54,12 @@ class DbTransactionController {
 
   async perform(httpRequest: any): Promise<void> {
     await this.db.openTransaction()
-    await this.decoratee.perform(httpRequest)
-    await this.db.commit()
+    try {
+      await this.decoratee.perform(httpRequest)
+      await this.db.commit()
+    } catch {
+      await this.db.rollback()
+    }
     await this.db.closeTransaction()
   }
 }
@@ -53,4 +68,5 @@ interface DbTransaction {
   openTransaction: () => Promise<void>
   closeTransaction: () => Promise<void>
   commit: () => Promise<void>
+  rollback: () => Promise<void>
 }
