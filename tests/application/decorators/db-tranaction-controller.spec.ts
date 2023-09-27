@@ -1,5 +1,6 @@
+import { type DbTransaction } from '@/application/contracts'
 import { Controller } from '@/application/controllers'
-import { type HttpResponse } from '@/application/helpers'
+import { DbTransactionController } from '@/application/decorators'
 import { type MockProxy, mock } from 'jest-mock-extended'
 
 describe('DbTransactionController', () => {
@@ -63,32 +64,3 @@ describe('DbTransactionController', () => {
     await expect(promise).rejects.toThrow(error)
   })
 })
-
-class DbTransactionController extends Controller {
-  constructor(
-    private readonly decoratee: Controller,
-    private readonly db: DbTransaction
-  ) { super() }
-
-  async perform(httpRequest: any): Promise<HttpResponse> {
-    let response: HttpResponse
-    await this.db.openTransaction()
-    try {
-      response = await this.decoratee.perform(httpRequest)
-      await this.db.commit()
-      return response
-    } catch (err) {
-      await this.db.rollback()
-      throw err
-    } finally {
-      await this.db.closeTransaction()
-    }
-  }
-}
-
-interface DbTransaction {
-  openTransaction: () => Promise<void>
-  closeTransaction: () => Promise<void>
-  commit: () => Promise<void>
-  rollback: () => Promise<void>
-}
